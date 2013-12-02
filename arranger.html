@@ -2,10 +2,10 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="css/bootstrap.min.css" rel="stylesheet">
-	<style>
-		body {min-height: 2000px;padding-top: 55px;}
-		.panel.hidden {display:none;}
-	</style>
+        <style>
+            body {min-height: 2000px;padding-top: 55px;}
+            .panel.hidden {display:none;}
+        </style>
     </head>
     <body>
 
@@ -34,12 +34,12 @@
                         </ul>
                         </li>
                     </ul>
-		    <form id="search-form" class="navbar-form navbar-left" role="search">
-		      <div class="form-group">
-			<input id="search-text" type="text" class="form-control" placeholder="Search">
-		      </div>
-		      <button id="search-button" type="button" class="btn btn-default">Search</button>
-		    </form>
+                    <form id="search-form" class="navbar-form navbar-left" role="search">
+                        <div class="form-group">
+                            <input id="search-text" type="text" class="form-control" placeholder="Search">
+                        </div>
+                        <button id="search-button" type="button" class="btn btn-default">Search</button>
+                    </form>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">About<b class="caret"></b></a>
@@ -55,28 +55,33 @@
 
         <!-- Bookmarks trees -->
         <div class="container">
-		<div id="editdialog"></div>
-		<div id="deletedialog"></div>
-		<div id="adddialog"></div>
+            <div id="editdialog"></div>
+            <div id="deletedialog"></div>
+            <div id="adddialog"></div>
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div id="panel-bookmarks"class="panel panel-primary bm-tree-node">
+                        <div class="panel-heading">Top</div>
+                        <div class="panel-body">
+                            <div id="bookmarks"></div>
+                        </div>
+                    </div>
+                </div>
 
-		<div id="panel-search-results" class="panel panel-default bm-tree-node hidden">
-		  <div class="panel-heading">Search</div>
-		  <div class="panel-body">
-			<div id="search-results"></div>
-		  </div>
-		</div>
-
-		<div id="#panel-bookmarks"class="panel panel-primary bm-tree-node">
-		  <div class="panel-heading">Top</div>
-		  <div class="panel-body">
-	    		<div id="bookmarks"></div>
-		  </div>
-		</div>
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div id="panel-search-results" class="panel panel-default bm-tree-node hidden">
+                        <div class="panel-heading">Search</div>
+                        <div class="panel-body">
+                            <div id="search-results"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div> <!-- /container -->
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
         <script src="js/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="arranger.js"></script>
