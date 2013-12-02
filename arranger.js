@@ -4,19 +4,25 @@
 
 // Search the bookmarks when entering the search keyword.
 $(function() {
-  $('#search-button').click(function() {
-	if( $('#search-text').val() ){
-	     $('#search-results').empty();
-	     $('#panel-search-results').removeClass("hidden");
-	     dumpBookmarks($('#search-text').val());
-	}else{
-	     $('#search-results').empty();
-	     $('#panel-search-results').addClass("hidden");
-	}
+  $('#search-button').click(function(){
+      searchBookmarks();
+      event.preventDefault();
+  });
+  $('#search-form').submit(function(){
+      searchBookmarks();
+      event.preventDefault();
   });
 });
 
-function dumpTopNode(){
+function searchBookmarks(){
+    if( $('#search-text').val() ){
+        $('#search-results').empty();
+        $('#panel-search-results').removeClass("hidden");
+        dumpBookmarks($('#search-text').val());
+    }else{
+        $('#search-results').empty();
+        $('#panel-search-results').addClass("hidden");
+    }
 }
 
 // Traverse the bookmark tree, and print the folder and nodes.
