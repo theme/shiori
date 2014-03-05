@@ -6,7 +6,6 @@
   "version": "0.1",
 
   "permissions": [
-    "https://secure.flickr.com/",
     "bookmarks"
   ],
   "icons" : {
@@ -18,8 +17,11 @@
     "default_title": "Shiori 0.1",
     "default_icon": {
         "19": "icon19.png"
-    },
-    "default_popup": "popup.html"
+    }
   },
-  "options_page": "options.html"
+  "options_page": "options.html",
+  "background":{
+    "scripts": ["eventPage.js"],
+    "persistent": false
+  }
 }
