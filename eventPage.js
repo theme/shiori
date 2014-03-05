@@ -11,12 +11,12 @@ function isArrangerUrl(url) {
 
 function goToArranger(){
   console.log('Going to Arranger...');
-  chrome.tabs.getAllInWindow( undefined, function(tabs) {
+  chrome.tabs.query( {}, function(tabs) {
     for ( var i = 0, tab; tab = tabs[i]; i++) {
       if ( tab.url && isArrangerUrl(tab.url)){
         console.log( 'Found Arranger tab: ' + tab.url + '. ' +
                       'Focusing ...');
-        chrome.tabs.update( tab.id, {selected:true});
+        chrome.tabs.update( tab.id, {highlighted: true});
         return;
       }
     }
