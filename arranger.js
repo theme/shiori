@@ -32,6 +32,7 @@ function dumpBookmarks(query) {
       $('#search-results').append(dumpTreeNodes(bookmarkTreeNodes, query));
     });
 }
+
 function dumpTreeNodes(bookmarkNodes, query) {
   var list = $('<ul>');
   var i;
@@ -40,23 +41,21 @@ function dumpTreeNodes(bookmarkNodes, query) {
   }
   return list;
 }
+
 function dumpNode(bookmarkNode, query) {
+  /* only search in titles
+   */
   if (bookmarkNode.title) {
-    if (query && !bookmarkNode.children) {
+    if (query && !bookmarkNode.children) {  // not folder
       if (String(bookmarkNode.title).indexOf(query) == -1) {
         return $('<span></span>');
       }
     }
     var anchor = $('<a>');
     anchor.attr('href', bookmarkNode.url);
+    anchor.attr('target', "_blank");
     anchor.text(bookmarkNode.title);
-    /*
-     * When clicking on a bookmark in the extension, a new tab is fired with
-     * the bookmark url.
-     */
-    anchor.click(function() {
-      chrome.tabs.create({url: bookmarkNode.url});
-    });
+    
     var span = $('<span>');
     var options = bookmarkNode.children ?
       $('<span>[<a href="#" id="addlink">Add</a>]</span>') :
