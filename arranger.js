@@ -65,7 +65,7 @@ function dumpNode(bookmarkNode, query) {
       '<input id="title"></td></tr><tr><td>URL</td><td><input id="url">' +
       '</td></tr></table>') : $('<input>');
     // Show add and edit links when hover over.
-        span.hover(function() {
+    span.hover(function() {
         span.append(options);
         $('#deletelink').click(function() {
           $('#deletedialog').empty().dialog({
