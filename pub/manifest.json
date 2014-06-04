@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+
+  "name": "Shiori",
+  "description": "Bookmark arranger",
+  "version": "0.1",
+
+  "permissions": [
+    "tabs",
+    "bookmarks"
+  ],
+  "icons" : {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+  },
+  "browser_action": {
+    "default_title": "Shiori 0.1",
+    "default_icon": {
+        "19": "icon19.png"
+    }
+  },
+  "options_page": "options.html",
+  "background":{
+    "scripts": ["eventPage.js"],
+    "persistent": false
+  }
+}
