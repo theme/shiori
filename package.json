@@ -1,0 +1,24 @@
+{
+  "name": "shiori",
+  "version": "0.0.0",
+  "description": "a bookmark manager",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-less": "^0.11.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com.theme/shiori.git"
+  },
+  "keywords": [
+    "bookmark",
+    "chrome-extension"
+  ],
+  "author": "theme",
+  "license": "MIT"
+}
