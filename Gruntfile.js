@@ -1,5 +1,18 @@
 module.exports = function(grunt) {
     grunt.initConfig({
+        jade: {
+            compile: {
+                options: {
+                    pretty: true,
+                    data: {
+                        debug: false
+                    }
+                },
+                files: {
+                    "pub/arranger.html": "src/jade/arranger.jade"
+                }
+            }
+        },
         less: {
             development: {
                 options: {
@@ -25,8 +38,9 @@ module.exports = function(grunt) {
         }
     });
     // Load the plugin that provides the "less" task.
+    grunt.loadNpmTasks('grunt-contrib-jade');
     grunt.loadNpmTasks('grunt-contrib-less');
 
     // Default task(s).
-    grunt.registerTask('default', ['less']);
+    grunt.registerTask('default', ['jade','less']);
 };
