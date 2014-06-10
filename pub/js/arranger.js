@@ -4,10 +4,12 @@
 
 // Search the bookmarks when entering the search keyword.
 $(function() {
+    // when user click
   $('#search-button').click(function(){
       searchBookmarks();
       event.preventDefault();
   });
+  // when user input enter
   $('#search-form').submit(function(){
       searchBookmarks();
       event.preventDefault();
@@ -137,8 +139,4 @@ function dumpNode(bookmarkNode, query) {
   }
   return li;
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-  dumpBookmarks();
-});
 

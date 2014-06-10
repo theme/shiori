@@ -4,12 +4,9 @@ html(lang="en")
         // meta(http-equiv="X-UA-Compatible",content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1")
         link(href="css/arranger.css", rel="stylesheet")
-        style
-            | body {min-height: 2000px;padding-top: 55px;}
-            | .panel.hidden {display:none;}
     body
         // Fixed navbar
-        div(class="navbar navbar-default navbar-fixed-top", role="navigation")
+        div(class="navbar navbar-default navbar-fixed-bottom", role="navigation")
             div.container
                 div.navbar-header
                     button(type="button", class="navbar-toggle", data-toggle="collapse" data-target=".navbar-collapse")
@@ -32,7 +29,7 @@ html(lang="en")
                                 li: a(href="#clean_recycle") clean recycle
                     form(id="search-form",class="navbar-form navbar-left",role="search")
                         div.form-group
-                            input(id="search-text",type="text", class="form-control", placeholder="Search")
+                            input(id="search-text",type="text", class="form-control", placeholder="Search" autofocus)
                             button(id="search-button",type="button", class="btn btn-default") Search
                     ul(class="nav navbar-nav navbar-right")
                         li.dropdown
@@ -44,15 +41,15 @@ html(lang="en")
                 //.nav-collapse
 
         // Bookmarks trees
-        div.container#arrange
+        div.container#arranger
             div.row
-                div(class="col-xs-12 col-sm-6 col-md-4 col-lg-4")
+                div(class="tgrid col-xs-12 col-sm-6 col-md-4 col-lg-4")
                     div(id="panel-bookmarks",class="panel panel-primary bm-tree-node")
                         div.panel-heading Top
                         div.panel-body
                             div#bookmarks
 
-                div(class="col-xs-12 col-sm-6 col-md-8 col-lg-8")
+                div(class="tgrid col-xs-12 col-sm-6 col-md-8 col-lg-8")
                     div#editdialog
                     div#deletedialog
                     div#adddialog
