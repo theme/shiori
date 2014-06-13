@@ -44,12 +44,31 @@ module.exports = function(grunt) {
                     'pub/js/arranger.js': 'src/coffee/arranger.coffee', // 1:1 compile
                 }
             }
-        }
+        },
+        watch: {
+            scripts: {
+                files: ['src/**'],
+                tasks: ['default'],
+                options: {
+                    spawn: false,
+                    interrupt: true,
+                    debounceDelay: 250,
+                    event: ['changed'], //changed, added, deleted, all
+                },
+            },
+            configFiles: {
+                files: [ 'Gruntfile.js', 'config/*.js' ],
+                options: {
+                    reload: true
+                }
+            },
+        },
     });
     // Load the plugin that provides the "less" task.
     grunt.loadNpmTasks('grunt-contrib-jade');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-coffee');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     // Default task(s).
     grunt.registerTask('default', ['jade','less','coffee']);
