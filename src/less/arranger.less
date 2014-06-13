@@ -1,10 +1,23 @@
 @import "bootstrap/bootstrap.less";
 
-body { padding-bottom: 52px; }
+@grid-gutter-width:1em;
+
+body { 
+    padding-top: 52px;
+}
+
+/*
+.container {
+    margin:0;
+}
+*/
 
 #panel-bookmarks, #panel-search-results {
     max-height: 95%;
     overflow:auto;
 }
-div.container#arrange {
+
+.bm-tree ul {
+    list-style: none;
+    padding-left: 1em;
 }

@@ -11,7 +11,16 @@ $ ->
         searchBookmarks()
         event.preventDefault()
         return
+    listBookmarks('bookmarks')
     return
+
+# list all bookmarks
+listBookmarks = ( divName ) ->
+  bookmarkTreeNodes = chrome.bookmarks.getTree(
+    (bookmarkTreeNodes) ->
+      $('#'+ divName).append(dumpTreeNodes(bookmarkTreeNodes, null))
+  )
+  return
 
 # search function
 searchBookmarks = ->
