@@ -1,5 +1,12 @@
 module.exports = function(grunt) {
     grunt.initConfig({
+        copy: {
+            main:{
+                files: [
+                    { expand:true, cwd:'src/js/',src:['**'], dest:'pub/js/', filter:'isFile'}
+                ]
+            }
+        },
         jade: {
             compile: {
                 options: {
@@ -38,10 +45,10 @@ module.exports = function(grunt) {
         coffee: {
             compileBare: {
                 options: {
-                    bare: true
+                    bare: false
                 },
                 files: {
-                    'pub/js/arranger.js': 'src/coffee/arranger.coffee', // 1:1 compile
+                     //'pub/js/arranger.js': ['src/coffee/arranger.coffee']
                 }
             }
         },
@@ -65,11 +72,12 @@ module.exports = function(grunt) {
         },
     });
     // Load the plugin that provides the "less" task.
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-jade');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-coffee');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     // Default task(s).
-    grunt.registerTask('default', ['jade','less','coffee']);
+    grunt.registerTask('default', ['copy','jade','less','coffee']);
 };

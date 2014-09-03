@@ -1,6 +1,5 @@
-# jQuery : document.jeady
+# jQuery : document.ready
 $ ->
-    console.log('document.ready()')
     # when user click
     $('#search-button').click ->
         searchBookmarks()
@@ -52,19 +51,24 @@ dumpTreeNodes = (bookmarkNodes, query) ->
 dumpNode = (bookmarkNode, query) ->
     # only search in titles
     if bookmarkNode.title
-        if query and !bookmarkNode.children # not folder
+        if query and !bookmarkNode.children # is leaf
             if String(bookmarkNode.title).indexOf(query) == -1
                 return $('<span></span>')
 
-        anchor = $('<a>')
-        anchor.attr('href', bookmarkNode.url)
-        anchor.attr('target', "_blank")
-        anchor.text(bookmarkNode.title)
-    
         span = $('<span>')
+        if bookmarkNode.url # is link
+          anchor = $('<a>')
+          anchor.attr('href', bookmarkNode.url)
+          anchor.attr('target', "_blank")
+          anchor.text('[' + bookmarkNode.id + '/' + bookmarkNode.index + ']' + bookmarkNode.title)
 
-    # adjust span
-        span.append(anchor)
+
+      # adjust span
+          span.append(anchor)
+        else
+          folder = $('<p>')
+          folder.text('[' + bookmarkNode.id + '/' + bookmarkNode.index + '/' + bookmarkNode.title + ']' )
+          span.append(folder)
 
     li = $( if bookmarkNode.title then '<li>' else '<div>').append(span)
     if bookmarkNode.children and bookmarkNode.children.length > 0
