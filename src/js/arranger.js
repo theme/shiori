@@ -5,11 +5,11 @@
         if (document.readyState == "complete") {
             $('#search-button').addEventListener('click', (function(e) {
                 searchBookmarks();
-                //e.preventDefault();
+                e.preventDefault();
             }));
             $('#search-form').addEventListener('submit',(function(e) {
                 searchBookmarks();
-                //e.preventDefault();
+                e.preventDefault();
             }));
             listBookmarks('#bookmarks');
         }
