@@ -3,15 +3,13 @@
 
     document.onreadystatechange = function () {
         if (document.readyState == "complete") {
-            var sbtn = $('#search-button');
-            sbtn.addEventListener('click', (function(e) {
+            $('#search-button').addEventListener('click', (function(e) {
                 searchBookmarks();
-                e.preventDefault();
+                //e.preventDefault();
             }));
-            var sform = $('#search-form');
-            sform.addEventListener('submit',(function(e) {
+            $('#search-form').addEventListener('submit',(function(e) {
                 searchBookmarks();
-                e.preventDefault();
+                //e.preventDefault();
             }));
             listBookmarks('#bookmarks');
         }
@@ -26,14 +24,14 @@
     searchBookmarks = function() {
         console.log('searchBookmarks()');
         var results = $('#search-results')
-        while( results.firstChild ){
-            results.removeChild(result.firstChild);
+        while( results && results.firstChild ){
+            results.removeChild(results.firstChild);
         }
 
         var panel = $('#panel-search-results');
         if ($('#search-text').value) {
-            dumpBookmarks('#search-results', $('#search-text').value);
             panel.className = panel.className.replace ( /(?:^|\s)hidden(?!\S)/g , '' )
+            dumpBookmarks('#search-results', $('#search-text').value);
         } else {
             panel.className += "hidden";
         }
