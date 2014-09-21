@@ -13,43 +13,37 @@
                 searchBookmarks();
                 e.preventDefault();
             }));
-            listBookmarks('bookmarks');
+            listBookmarks('#bookmarks');
         }
     };
 
     listBookmarks = function(divName) {
         console.log('listBookmarks()');
-        var bookmarkTreeNodes, bmlist;
-        bookmarkTreeNodes = chrome.bookmarks.getTree(function(bmt) {
-            $('#' + divName).appendChild(dumpTreeNodes(bmt, null));
-        });
+        dumpBookmarks(divName, null);
     };
 
+    /* get keyword and search */
     searchBookmarks = function() {
         console.log('searchBookmarks()');
+        var results = $('#search-results')
+        while( results.firstChild ){
+            results.removeChild(result.firstChild);
+        }
+
+        var panel = $('#panel-search-results');
         if ($('#search-text').value) {
-            var results = $('#search-results')
-            while( results.firstChild ){
-                results.removeChild(result.firstChild);
-            }
-            var panelresults = $('#panel-search-results');
-            panelresults.className.replace(/(?:^|\s)hidden(?!\S)/g,'');
-            dumpBookmarks($('#search-text').value);
+            dumpBookmarks('#search-results', $('#search-text').value);
+            panel.className = panel.className.replace ( /(?:^|\s)hidden(?!\S)/g , '' )
         } else {
-            var results = $('#search-results')
-            while( results.firstChild ){
-                results.removeChild(result.firstChild);
-            }
-            var panelresults = $('#panel-search-results');
-            panelresults.className += "hidden";
+            panel.className += "hidden";
         }
     };
 
-    dumpBookmarks = function(query) {
+    dumpBookmarks = function( dest, query) {
         console.log('dumpBookmarks()');
         var bookmarkTreeNodes;
         bookmarkTreeNodes = chrome.bookmarks.getTree(function(bmt) {
-            $('#search-results').appendChild(dumpTreeNodes(bmt, query));
+            $(dest).appendChild(dumpTreeNodes(bmt, query));
         });
     };
 
