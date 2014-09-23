@@ -32,10 +32,15 @@ html(lang="en")
 
         // Bookmarks trees
         div(id="panel-container",class="row")
-            div(id="panel-bookmarks",class="panel panel-primary ")
+            div(id="panel-bmtree",class="panel panel-primary ")
                 div.panel-heading Bookmark folders
                 div.panel-body
-                    div.bm-tree#bookmarks
+                    div.bm-tree#bookmarks-tree
+
+            div(id="panel-bmlist",class="panel panel-default ")
+                div.panel-heading Bookmarks
+                div.panel-body
+                    div.bm-tree#bookmarks-list
 
             div(id="panel-search-results",class="panel panel-default hidden")
                 div.panel-heading Search result
