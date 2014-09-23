@@ -21,9 +21,14 @@
         }
     };
     
-    listBookmarks = function( divName, bmId ){
+    listBookmarks = function( destDivName, bmId ){
+        // clear
+        var dest = $('#' + destDivName);
+        while( dest && dest.firstChild ){
+            dest.removeChild(dest.firstChild);
+        }
         chrome.bookmarks.getChildren(bmId, function(bmarray){
-            $('#'+divName).appendChild(dumpTreeNodes(bmarray, false, 1) );
+            dest.appendChild(dumpTreeNodes(bmarray, false, 1) );
         });
     }
 
@@ -34,15 +39,10 @@
 
     /* get keyword and search */
     searchBookmarks = function(query) {
-        var results = $('#search-results');
         var panel = $('#panel-search-results');
 
         if (query) {
             console.log('searchBookmarks()');
-            // clear
-            while( results && results.firstChild ){
-                results.removeChild(results.firstChild);
-            }
             // show panel
             panel.className = panel.className.replace ( /(?:^|\s)hidden(?!\S)/g , '' )
             // append
@@ -52,17 +52,22 @@
         }
     };
 
-    dumpBookmarks = function( dest, query ) {
+    dumpBookmarks = function( destDivName, query ) {
         console.log('dumpBookmarks() query=', query);
+        // clear
+        var dest = $('#' + destDivName);
+        while( dest && dest.firstChild ){
+            dest.removeChild(dest.firstChild);
+        }
         if( query ) {
             chrome.bookmarks.search(query, function(bmarray) {
                 console.log('\tsearch');
-                $('#'+dest).appendChild(dumpTreeNodes(bmarray));
+                dest.appendChild(dumpTreeNodes(bmarray));
             });
         } else {
             chrome.bookmarks.getTree(function(bmarray) {
                 console.log('\tgetTree');
-                $('#'+dest).appendChild(dumpTreeNodes(bmarray, true));
+                dest.appendChild(dumpTreeNodes(bmarray, true));
             });
         }
     };
