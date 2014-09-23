@@ -1,16 +1,49 @@
-@import "bootstrap/bootstrap.less";
-
-@grid-gutter-width:1em;
+div, a{ // debug
+    background: rgba(255,0,0, .1);
+}
 
 body { 
-    padding-top: 52px;
-}
-
-/*
-.container {
     margin:0;
 }
-*/
+
+.navbar {
+    div, form, ul, li, a {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+    }
+    ul{
+        list-style-type: none;
+        ul{
+            display: none;
+            position: absolute;	/* take away the 2nd ul 's "float" */
+            padding: 0em;
+            background-color: #f9f9f9;
+            border-left: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+        }
+        li.dropdown:hover ul{
+            display: block;
+            li { display: block; }
+        }
+    }
+    a{
+        padding: .5em;
+        border: 1px solid #f9f9f9;
+    }
+}
+
+.row {
+    > div {
+        display: inline-block;
+    }
+    #panel-bookmarks {
+        max-width: 32%;
+    }
+    #panel-search-result {
+        //width: 40%;
+    }
+}
 
 #panel-bookmarks, #panel-search-results {
     max-height: 95%;
@@ -22,7 +55,8 @@ body {
     list-style: square;
     li {
         list-style: none;
-        border: solid 1px red;
+        //border: solid 1px red;
     }
     padding-left: 1em;
 }
+

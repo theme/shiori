@@ -1,65 +1,47 @@
 html(lang="en")
     head
         meta(charset="utf-8")
-        // meta(http-equiv="X-UA-Compatible",content="IE=edge")
-        meta(name="viewport", content="width=device-width, initial-scale=1")
+        //meta(name="viewport", content="width=device-width, initial-scale=1")
         link(href="css/arranger.css", rel="stylesheet")
     body
-        // Fixed navbar
-        div(class="navbar navbar-default navbar-fixed-top", role="navigation")
-            div.container
-                div.navbar-header
-                    button(type="button", class="navbar-toggle", data-toggle="collapse" data-target=".navbar-collapse")
-                        span.sr-only Menu
-                        span.icon-bar
-                        span.icon-bar
-                        span.icon-bar
-                    a(class="navbar-brand", href="#") 栞
+        div(class="navbar")
+            div.navbar-header
+                a(class="navbar-brand", href="#") 栞
 
-                div(class="navbar-collapse collapse")
-                    ul.nav.navbar-nav
-                        li.active: a(href="#arrange") Arrange
-                        li: a(href="#dup") Dup
-                        li: a(href="#graph") Graph
-                        li.dropdown
-                            a(href="#",class="dropdown-toggle",data-toggle="dropdown") Clean
-                                b.caret
-                            ul.dropdown-menu
-                                li: a(href="#clean_temp") clean temp
-                                li: a(href="#clean_recycle") clean recycle
-                    form(id="search-form",class="navbar-form navbar-left",role="search")
-                        div.form-group
-                            input(id="search-text",type="text", class="form-control", placeholder="Search" autofocus)
-                            button(id="search-button",type="button", class="btn btn-default") Search
-                    ul(class="nav navbar-nav navbar-right")
-                        li.dropdown
-                            a(href="#",class="dropdown-toggle",data-toggle="dropdown") About
-                                b.caret
-                            ul.dropdown-menu
-                                li: a(href="http://getbootstrap.com/" target="_blank") bootstrap
-                                li: a(href="http://developer.chrome.com/extensions/devguide.html",target="_blank") chrome extension
+            div(class="navbar-collapse collapse")
+                ul.nav.navbar-nav
+                    li: a(href="#arrange") Arrange
+                    li: a(href="#dup") Dup
+                    li.dropdown
+                        a(href="#",class="dropdown-toggle",data-toggle="dropdown") Clean
+                            b.caret
+                        ul.dropdown-menu
+                            li: a(href="#clean_temp") clean temp
+                            li: a(href="#clean_recycle") clean recycle
+                form(id="search-form",class="navbar-form navbar-left",role="search")
+                    div.form-group
+                        input(id="search-text",type="text", class="form-control", placeholder="Search" autofocus)
+                        button(id="search-button",type="button", class="btn btn-default") Search
+                ul(class="nav navbar-nav navbar-right")
+                    li.dropdown
+                        a(href="#",class="dropdown-toggle",data-toggle="dropdown") About
+                            b.caret
+                        ul.dropdown-menu
+                            li: a(href="http://getbootstrap.com/" target="_blank") bootstrap
+                            li: a(href="http://developer.chrome.com/extensions/devguide.html",target="_blank") chrome extension
 
         // Bookmarks trees
-        div.container#v-arrangercon
-            div.row
-                div(class="tgrid col-xs-12 col-sm-6 col-md-4 col-lg-4")
-                    div(id="panel-bookmarks",class="panel panel-primary ")
-                        div.panel-heading Bookmark folders
-                        div.panel-body
-                            div.bm-tree#bookmarks
+        div(id="panel-container",class="row")
+            div(id="panel-bookmarks",class="panel panel-primary ")
+                div.panel-heading Bookmark folders
+                div.panel-body
+                    div.bm-tree#bookmarks
 
-                div(class="tgrid col-xs-12 col-sm-6 col-md-8 col-lg-8")
-                    div(id="panel-search-results",class="panel panel-default hidden")
-                        div.panel-heading Search result
-                        div.panel-body
-                            div.bm-tree#search-results
+            div(id="panel-search-results",class="panel panel-default hidden")
+                div.panel-heading Search result
+                div.panel-body
+                    div.bm-tree#search-results
 
-        //
-            Bootstrap core JavaScript
-            ==================================================
-            Placed at the end of the document so the pages load faster
-        //script(src="js/jquery.min.js")
-        //script(src="js/bootstrap.min.js")
         script(src="js/util.js")
         script(src="js/arranger.js")
 
