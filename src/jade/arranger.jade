@@ -4,7 +4,7 @@ html(lang="en")
         //meta(name="viewport", content="width=device-width, initial-scale=1")
         link(href="css/arranger.css", rel="stylesheet")
     body
-        div(class="navbar")
+        div#topmenu-container.container.navbar
             div.navbar-header
                 a(class="navbar-brand", href="#") 栞
 
@@ -31,21 +31,22 @@ html(lang="en")
                             li: a(href="http://developer.chrome.com/extensions/devguide.html",target="_blank") chrome extension
 
         // Bookmarks trees
-        div(id="panel-container",class="row")
-            div(id="panel-bmtree",class="panel panel-primary ")
-                div.panel-heading Bookmark folders
+        div#panels-container.container.row
+            div(id="panel-bm-tree",class="panel panel-primary ")
+                div.panel-heading.container Bookmark folders
                 div.panel-body
-                    div.bm-tree#bookmarks-tree
+                    div.bm-tree.column#bookmarks-tree
 
-            div(id="panel-bmlist",class="panel panel-default ")
-                div.panel-heading Bookmarks
-                div.panel-body
-                    div.bm-tree#bookmarks-list
+            div#list-container.container.column
+                div(id="panel-bm-list",class="panel panel-default ")
+                    div.panel-heading Bookmarks
+                    div.panel-body
+                        div.bm-list.row#bookmarks-list
 
-            div(id="panel-search-results",class="panel panel-default hidden")
-                div.panel-heading Search result
-                div.panel-body
-                    div.bm-tree#search-results
+                div(id="panel-search-results",class="panel panel-default hidden")
+                    div.panel-heading Search result
+                    div.panel-body
+                        div.bm-list#search-results
 
         script(src="js/util.js")
         script(src="js/arranger.js")
