@@ -1,6 +1,4 @@
 @dbg-color:rgba(255,0,0, .05);
-@navbar-height: 1em;
-@border-color: #00f;
 @dropdown-background-color: #ffe;
 
 /* debug */
@@ -18,15 +16,19 @@ body {
 .container {
     margin: 0;
     padding: 0;
+    >div {
+        height: 100%;
+        overflow: auto;
+    }
 }
 
-.row {
+.flex-row {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
 }
 
-.column {
+.flex-column {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -34,8 +36,6 @@ body {
 
 .navbar {
     display: inline-flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
     div, ul, form, ul li {
         display: inline-block;
         margin: 0;
@@ -57,20 +57,21 @@ body {
     }
 }
 
-#panels-container {
-    .hidden {
-        display: none;
+.panel{
+    padding: .1em;
+    vertical-align: top;
+    .panel-heading {
+        background-color: #bbe;
     }
-    >.panel, >.container{
-        vertical-align: top;
-        max-height: 90%;//TODO
-        overflow: scroll;
-        .panel-body{
-            min-width: 5px;
-            //overflow: visible;
-        }
+    .panel-body{
+        min-width: 5px;
     }
 }
+
+.panel.hidden {
+    display: none;
+}
+
 .bm-tree, .bm-list {
     ul {
         padding-left: 1em;
@@ -80,3 +81,4 @@ body {
         }
     }
 }
+

@@ -4,49 +4,48 @@ html(lang="en")
         //meta(name="viewport", content="width=device-width, initial-scale=1")
         link(href="css/arranger.css", rel="stylesheet")
     body
-        div#topmenu-container.container.navbar
+        div.navbar
             div.navbar-header
                 a(class="navbar-brand", href="#") 栞
 
-            div(class="navbar-collapse collapse")
+            div.navbar-nav
                 ul.nav.navbar-nav
                     li: a(href="#arrange") Arrange
                     li: a(href="#dup") Dup
                     li.dropdown
                         a(href="#",class="dropdown-toggle",data-toggle="dropdown") Clean
-                            b.caret
                         ul.dropdown-menu
                             li: a(href="#clean_temp") clean temp
                             li: a(href="#clean_recycle") clean recycle
-                form(id="search-form",class="navbar-form navbar-left",role="search")
+                form#search-form.navbar-form
                     div.form-group
-                        input(id="search-text",type="text", class="form-control", placeholder="Search" autofocus)
-                        button(id="search-button",type="button", class="btn btn-default") Search
-                ul(class="nav navbar-nav navbar-right")
+                        input#search-text.form-control(type="text",placeholder="Keyword", autofocus)
+                        button#search-button Search
+                ul.nav.navbar-nav
                     li.dropdown
                         a(href="#",class="dropdown-toggle",data-toggle="dropdown") About
-                            b.caret
                         ul.dropdown-menu
                             li: a(href="http://getbootstrap.com/" target="_blank") bootstrap
                             li: a(href="http://developer.chrome.com/extensions/devguide.html",target="_blank") chrome extension
 
         // Bookmarks trees
-        div#panels-container.container.row
-            div(id="panel-bm-tree",class="panel panel-primary ")
-                div.panel-heading.container Bookmark folders
-                div.panel-body
-                    div.bm-tree.column#bookmarks-tree
+        div#main
+            div#panels.flex-row
+                div#panel-bm-tree.panel
+                    div.panel-heading Bookmark folders
+                    div.panel-body.container
+                        div.bm-tree#bookmarks-tree
 
-            div#list-container.container.column
-                div(id="panel-bm-list",class="panel panel-default ")
-                    div.panel-heading Bookmarks
-                    div.panel-body
-                        div.bm-list.row#bookmarks-list
+                div#lists.flex-column
+                    div#panel-bm-list.panel
+                        div.panel-heading Bookmarks
+                        div.panel-body.container
+                            div.bm-list#bookmarks-list
 
-                div(id="panel-search-results",class="panel panel-default hidden")
-                    div.panel-heading Search result
-                    div.panel-body
-                        div.bm-list#search-results
+                    div#panel-search-results.panel.hidden
+                        div.panel-heading Search result
+                        div.panel-body.container
+                            div.bm-list#search-results
 
         script(src="js/util.js")
         script(src="js/arranger.js")
