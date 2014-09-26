@@ -13,7 +13,7 @@ body {
     padding: 0px;
 }
 
-.container {
+.panel-body {
     margin: 0;
     padding: 0;
     >div {
@@ -32,29 +32,6 @@ body {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-}
-
-.navbar {
-    display: inline-flex;
-    div, ul, form, ul li {
-        display: inline-block;
-        margin: 0;
-    }
-    ul {
-        list-style-type: none;
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            padding: 0;
-            background-color: @dropdown-background-color;
-        }
-
-        li.dropdown:hover {
-            .dropdown-menu, li{
-                display: block;
-            }
-        }
-    }
 }
 
 .panel{
