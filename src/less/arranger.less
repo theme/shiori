@@ -9,17 +9,7 @@ div, ul, li, p, a, form{
 body { 
     height: 100%;
     margin: 0;
-    overflow: hidden;
     padding: 0px;
-}
-
-.panel-body {
-    margin: 0;
-    padding: 0;
-    >div {
-        height: 100%;
-        overflow: auto;
-    }
 }
 
 .flex-row {
@@ -34,19 +24,20 @@ body {
     flex-wrap: nowrap;
 }
 
+
 .panel{
     padding: .1em;
-    vertical-align: top;
     .panel-heading {
         background-color: #bbe;
+        form { margin: 0; padding-left: .5em; }
     }
     .panel-body{
-        min-width: 5px;
+        height: 100%; //TODO
     }
 }
 
-.panel.hidden {
-    display: none;
+#panels {
+    height: 100%;   //TODO
 }
 
 .bm-tree, .bm-list {
