@@ -12,7 +12,6 @@
             $('#search-button').addEventListener('click', searchFun);
             $('#search-form').addEventListener('submit', searchFun);
             $('#panel-bm-tree').addEventListener('click',( function(e) {
-                console.log(e.target.id);
                 if( e.target.id ){
                     listBookmarks('bookmarks-list', e.target.id );
                 }
