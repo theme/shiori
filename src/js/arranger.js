@@ -12,7 +12,6 @@
             $('#search-button').addEventListener('click', searchFun);
             $('#search-form').addEventListener('submit', searchFun);
             $('#panel-bm-tree').addEventListener('click',( function(e) {
-                console.log(e.target.id);
                 if( e.target.id ){
                     listBookmarks('bookmarks-list', e.target.id );
                 }
@@ -22,9 +21,8 @@
     };
     
     listBookmarks = function( destDivName, bmId ){
-        // clear
         var dest = $('#' + destDivName);
-        while( dest && dest.firstChild ){
+        while( dest && dest.firstChild ){ // clear
             dest.removeChild(dest.firstChild);
         }
         chrome.bookmarks.getChildren(bmId, function(bmarray){
@@ -33,40 +31,26 @@
     }
 
     loadBookmarkTree = function(divName) {
-        console.log('loadBookmarkTree()');
         dumpBookmarks(divName, null); // no query
     };
 
-    /* get keyword and search */
     searchBookmarks = function(query) {
-        var panel = $('#panel-search-results');
-
         if (query) {
-            console.log('searchBookmarks()');
-            // show panel
-            panel.className = panel.className.replace ( /(?:^|\s)hidden(?!\S)/g , '' )
-            // append
             dumpBookmarks('search-results', query);
-        } else {
-            panel.className += "hidden";
         }
     };
 
     dumpBookmarks = function( destDivName, query ) {
-        console.log('dumpBookmarks() query=', query);
-        // clear
         var dest = $('#' + destDivName);
         while( dest && dest.firstChild ){
             dest.removeChild(dest.firstChild);
         }
         if( query ) {
             chrome.bookmarks.search(query, function(bmarray) {
-                console.log('\tsearch');
                 dest.appendChild(dumpTreeNodes(bmarray));
             });
         } else {
             chrome.bookmarks.getTree(function(bmarray) {
-                console.log('\tgetTree');
                 dest.appendChild(dumpTreeNodes(bmarray, true));
             });
         }

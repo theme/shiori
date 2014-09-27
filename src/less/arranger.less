@@ -6,55 +6,50 @@ div, ul, li, p, a, form{
     background: @dbg-color;
 }
 
+html,
 body { 
     height: 100%;
     margin: 0;
-    overflow: hidden;
     padding: 0px;
-}
+    overflow: hidden;
 
-.panel-body {
-    margin: 0;
-    padding: 0;
-    >div {
-        height: 100%;
-        overflow: auto;
-    }
-}
-
-.flex-row {
+    width: 100%;
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    flex-flow: row nowrap;
+    #left{ flex: 1 1 auto; }
+    #middle{ flex: 5 1 auto; }
+    #right{ flex: 1 1 auto; }
 }
 
-.flex-column {
+.container {
+    width: 5%;
+
     display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
+    flex-flow: column nowrap;
 }
 
 .panel{
+    flex: 1 1 auto;
+
+    display: flex;
+    flex-flow: column nowrap;
     padding: .1em;
-    vertical-align: top;
     .panel-heading {
+        flex: 0 0 auto;
         background-color: #bbe;
+        form { margin: 0; padding: 0 .5em; }
     }
     .panel-body{
-        min-width: 5px;
-    }
-}
-
-.panel.hidden {
-    display: none;
-}
-
-.bm-tree, .bm-list {
-    ul {
-        padding-left: 1em;
-        list-style: none;
-        li {
+        flex: 1 0 auto;
+        overflow: auto;
+        height: 1%;    // hack for flex auto expand height
+        ul {
+            margin: 0;
+            padding-left: 1em;
             list-style: none;
+            li {
+                list-style: none;
+            }
         }
     }
 }
