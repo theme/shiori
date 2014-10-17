@@ -5,17 +5,17 @@ html(lang="en")
         link(href="css/arranger.css", rel="stylesheet")
     body
         div.container#left
+            form#search-form
+                div.form-group
+                    input#search-text(type="text",placeholder="Keyword", autofocus)
+                    button#search-button Search
             div#panel-bm-tree.panel
                 div.panel-heading Bookmark Tree
                 div.panel-body#bookmarks-tree
 
         div.container#middle
             div#panel-search-results.panel
-                div.panel-heading
-                    form#search-form
-                        div.form-group
-                            input#search-text(type="text",placeholder="Keyword", autofocus)
-                            button#search-button Search
+                div.panel-heading Search
                 div.panel-body#search-results
             div#panel-bm-list.panel
                 div.panel-heading Bookmarks
