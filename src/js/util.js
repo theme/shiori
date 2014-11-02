@@ -1,6 +1,6 @@
 /* $ -> getElementById */
 function $(idOrType){
-    //console.log('$('+idOrType+')');
+//     console.log('$('+idOrType+')');
     if( typeof idOrType != 'string' || idOrType.length == 0){
             return null;
         }
