@@ -1,24 +1,19 @@
 (function() {
     var dumpBookmarks, dumpNode, dumpTreeNodes, makeNode;
     var loadBookmarkTree, listBookmarks, searchBookmarks;
+    var toggleSub;
 
-    document.onreadystatechange = function () {
-        if (document.readyState == "complete") {
-            var searchFun = (function(e) {
-                var query = $('#search-text').value;
-                searchBookmarks(query);
-                e.preventDefault();
-            });
-            $('#search-button').addEventListener('click', searchFun);
-            $('#search-form').addEventListener('submit', searchFun);
-            $('#panel-bm-tree').addEventListener('click',( function(e) {
-                if( e.target.id ){
-                    listBookmarks('bookmarks-list', e.target.id );
-                }
-            }),true);
-            loadBookmarkTree('bookmarks-tree');
+    toggleSub = function(){
+        var x = document.querySelectorAll('.sub');
+        for( var i = 0 ; i< x.length ; i++){
+            console.log(x[i].style.display);
+            if ( x[i].style.display == 'none'){
+                x[i].style.display = 'block';
+            }else {
+                x[i].style.display = 'none';
+            }
         }
-    };
+    }
     
     listBookmarks = function( destDivName, bmId ){
         var dest = $('#' + destDivName);
@@ -36,7 +31,7 @@
 
     searchBookmarks = function(query) {
         if (query) {
-            dumpBookmarks('search-results', query);
+            dumpBookmarks('bookmarks-list', query);
         }
     };
 
@@ -104,5 +99,24 @@
         }
         return span;
     }
+
+    document.onreadystatechange = function () {
+        if (document.readyState == "complete") {
+            var searchFun = (function(e) {
+                var query = $('#search-text').value;
+                searchBookmarks(query);
+                e.preventDefault();
+            });
+            $('#search-button').addEventListener('click', searchFun);
+            $('#toggle-sub').addEventListener('click', toggleSub);
+            $('#search-form').addEventListener('submit', searchFun);
+            $('#panel-bm-tree').addEventListener('click',( function(e) {
+                if( e.target.id ){
+                    listBookmarks('bookmarks-list', e.target.id );
+                }
+            }),true);
+            loadBookmarkTree('bookmarks-tree');
+        }
+    };
 
 }).call(this);

@@ -4,27 +4,29 @@ html(lang="en")
         meta(charset="utf-8")
         link(href="css/arranger.css", rel="stylesheet")
     body
-        div.container#left
+        div#header
             form#search-form
-                div.form-group
-                    input#search-text(type="text",placeholder="Keyword", autofocus)
-                    button#search-button Search
-            div#panel-bm-tree.panel
-                div.panel-heading Bookmark Tree
-                div.panel-body#bookmarks-tree
+                input#search-text(type="text",placeholder="Keyword", autofocus)
+                button#search-button Search
+            button#toggle-sub 2nd panel
+        div#main
+            div.container.tree
+                div#panel-bm-tree.panel
+                    div.panel-heading Folders
+                    div.panel-body#bookmarks-tree
 
-        div.container#middle
-            div#panel-search-results.panel
-                div.panel-heading Search
-                div.panel-body#search-results
-            div#panel-bm-list.panel
-                div.panel-heading Bookmarks
-                div.panel-body#bookmarks-list
+            div.container.lists
+                div#panel-bm-list.panel
+                    div.panel-heading List
+                    div.panel-body#bookmarks-list
+                div#panel-bm-list.panel.sub
+                    div.panel-heading List 2
+                    div.panel-body#bookmarks-list
 
-        div.container#right
-            div#panel-bm-list.panel
-                div.panel-heading Bookmark Tree
-                div.panel-body#bookmarks-tree2
+            div.container.tree.sub
+                div#panel-bm-list.panel
+                    div.panel-heading Folders 2
+                    div.panel-body#bookmarks-tree2
 
 
         script(src="js/util.js")

@@ -1,6 +1,8 @@
 @dbg-color:rgba(255,0,0, .05);
 @dropdown-background-color: #ffe;
 
+@tree-width:20%;
+
 /* debug */
 div, ul, li, p, a, form{
     background: @dbg-color;
@@ -12,22 +14,36 @@ div {
 }
 
 html,
-body { 
+body{
     height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0px;
-    overflow: hidden;
+    .flex-v;
+}
 
-    width: 100%;
+#header * {
+    display: inline-block;
+}
+
+.flex-h {
     display: flex;
     flex-flow: row nowrap;
-    #left{ flex: 1 1 auto; }
-    #middle{ flex: 5 1 auto; }
-    #right{ flex: 1 1 auto; display: none; }
+}
+.flex-v {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+#main {
+    .flex-h;
+    flex: 1 1 100%;
+    .tree{ flex: 2 2 @tree-width; }
+    .lists{ flex: 1 1 100% - @tree-width; }
 }
 
 .container {
-    width: 5%;
+/* width: 5%; */
 
     display: flex;
     flex-flow: column nowrap;
@@ -62,3 +78,6 @@ body {
     }
 }
 
+.sub {
+    display: none;
+}
