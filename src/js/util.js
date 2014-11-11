@@ -1,4 +1,5 @@
-/* $ -> getElementById */
+// $('#id') -> getElementById
+// $('<tag>') -> createElement
 function $(idOrType){
 //     console.log('$('+idOrType+')');
     if( typeof idOrType != 'string' || idOrType.length == 0){
