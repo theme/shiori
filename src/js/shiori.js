@@ -6,21 +6,21 @@ this.shiori = ( function(){
     /* exportPath() : export dot seperated object name chain */
     function exportPath( path, opt_obj, opt_to_obj){
         var parts = path.split('.');
-        var cur_obj = opt_to_obj || global;
+        var cur = opt_to_obj || global;
 
         for( var part ; parts.length && (part = parts.shift()); ){
             if( !parts.length && opt_obj != undefined ){
                 // add last part into path
-                cur_obj[part] = opt_obj;
-            }else if ( part in cur_obj ){
+                cur[part] = opt_obj;
+            }else if ( part in cur ){
                 // has this part in path, move on to next
-                cur_obj = cur_obj[part];
+                cur = cur[part];
             }else {
                 // not has this part in path, add it
-                cur_obj[part] = {};
+                cur = cur[part] = {};
             }
         }
-        return cur_obj;
+        return cur;
     };
 
     /* add fields of fun returned object to name */
@@ -34,10 +34,10 @@ this.shiori = ( function(){
                 Object.defineProperty( obj, propertyName, propertyDesc );
             }
         }
-    }
+    };
 
     return {
         define : define
-    }
+    };
 })();
 

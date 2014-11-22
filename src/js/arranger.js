@@ -20,7 +20,7 @@
         while( dest && dest.firstChild ){ // clear
             dest.removeChild(dest.firstChild);
         }
-        chrome.bookmarks.getChildren(bmId, function(bmarray){
+        bmm.bookmarks.getChildren(bmId, function(bmarray){
             dest.appendChild(dumpTreeNodes(bmarray, false, 1) );
         });
     }
@@ -72,6 +72,7 @@
         var li = $(bmNode.title ? '<li>' : '<div>');
 
         li.appendChild( makeNode(bmNode, curr_depth) );
+        li.setAttribute( 'draggable', 'true' );
 
         if ( bmNode.children && bmNode.children.length > 0) {
             li.appendChild(dumpTreeNodes(bmNode.children, dir_only, max_depth, ++curr_depth));
