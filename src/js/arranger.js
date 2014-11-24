@@ -2,6 +2,7 @@
     var dumpBookmarks, dumpNode, dumpTreeNodes, makeNode;
     var loadBookmarkTree, listBookmarks, searchBookmarks;
     var toggleSub;
+    var handleKeyDown;
 
     toggleSub = function(){
         var x = document.querySelectorAll('.sub');
@@ -101,6 +102,12 @@
         return span;
     }
 
+    handleKeyDown = function( e ) {
+        if( e.ctrlKey && e.keyIdentifier == "U+0032" ){ // Ctrl-2
+            toggleSub();
+        }
+    }
+
     document.onreadystatechange = function () {
         if (document.readyState == "complete") {
             var searchFun = (function(e) {
@@ -117,6 +124,8 @@
                 }
             }),true);
             loadBookmarkTree('bookmarks-tree');
+
+            document.addEventListener('keydown', handleKeyDown);
         }
     };
 
