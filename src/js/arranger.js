@@ -14,7 +14,7 @@
                 x[i].style.display = 'none';
             }
         }
-    }
+    };
     
     listBookmarks = function( destDivName, bmId ){
         var dest = $('#' + destDivName);
@@ -24,7 +24,7 @@
         bmm.bookmarks.getChildren(bmId, function(bmarray){
             dest.appendChild(dumpTreeNodes(bmarray, false, 1) );
         });
-    }
+    };
 
     loadBookmarkTree = function(divName) {
         dumpBookmarks(divName, null); // no query
@@ -100,13 +100,13 @@
             }
         }
         return span;
-    }
+    };
 
     handleKeyDown = function( e ) {
         if( e.ctrlKey && e.keyIdentifier == "U+0032" ){ // Ctrl-2
             toggleSub();
         }
-    }
+    };
 
     document.onreadystatechange = function () {
         if (document.readyState == "complete") {
@@ -115,8 +115,8 @@
                 searchBookmarks(query);
                 e.preventDefault();
             });
-            $('#search-button').addEventListener('click', searchFun);
-            $('#toggle-sub').addEventListener('click', toggleSub);
+            // $('#search-button').addEventListener('click', searchFun);
+            // $('#toggle-sub').addEventListener('click', toggleSub);
             $('#search-form').addEventListener('submit', searchFun);
             $('#panel-bm-tree').addEventListener('click',( function(e) {
                 if( e.target.id ){

@@ -9,7 +9,7 @@ this.shiori = ( function(){
         var cur = opt_to_obj || global;
 
         for( var part ; parts.length && (part = parts.shift()); ){
-            if( !parts.length && opt_obj != undefined ){
+            if( !parts.length && opt_obj !== undefined ){
                 // add last part into path
                 cur[part] = opt_obj;
             }else if ( part in cur ){
@@ -21,7 +21,7 @@ this.shiori = ( function(){
             }
         }
         return cur;
-    };
+    }
 
     /* add fields of fun returned object to name */
     function define( name, fun ){
@@ -34,7 +34,7 @@ this.shiori = ( function(){
                 Object.defineProperty( obj, propertyName, propertyDesc );
             }
         }
-    };
+    }
 
     return {
         define : define

@@ -8,8 +8,7 @@ div, ul, li, p, a, form{
     background: @dbg-color;
 }
 
-form,
-div {
+form, div {
     margin: 0;
 }
 
@@ -17,13 +16,19 @@ html,
 body{
     height: 100%;
     width: 100%;
-    margin: 0;
+    margin: 0 auto;
     padding: 0px;
     .flex-v;
 }
 
-#header * {
-    display: inline-block;
+#header {
+    width: 100%;
+    * {
+        display: inline;
+    }
+    #search-form {
+        float: right;
+    }
 }
 
 .flex-h {
@@ -63,6 +68,7 @@ body{
     .panel-body{
         flex: 1 0 auto;
         overflow: scroll;
+        min-height: 5em;
         height: 1%;    // hack for flex auto expand height
     }
 }

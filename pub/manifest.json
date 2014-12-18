@@ -7,8 +7,7 @@
 
   "permissions": [
     "tabs",
-    "bookmarks",
-    "file:///*"
+    "bookmarks"
   ],
   "icons" : {
       "16": "img/icon16.png",
