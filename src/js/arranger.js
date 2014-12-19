@@ -5,9 +5,9 @@
     var handleKeyDown;
 
     toggleSub = function(){
-        var x = document.querySelectorAll('.sub');
+        var x = document.querySelectorAll('#main');
         for( var i = 0 ; i< x.length ; i++){
-            x[i].classList.toggle('hide');
+            x[i].classList.toggle('double');
         }
     };
     
