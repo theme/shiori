@@ -1,91 +1,87 @@
-@dbg-color:rgba(255,0,0, .05);
+@dbg-color: rgba(255,0,0, .05);
 @dropdown-background-color: #ffe;
-
-@tree-width:20%;
-
+@tree-width: 20%;
 /* debug */
-div, ul, li, p, a, form{
+div, ul, li, p, a, form, h1, h2, h3, form {
     background: @dbg-color;
 }
 
-form, div {
+div, form, h2 {
     margin: 0;
 }
 
-html,
-body{
+html, body {
     height: 100%;
     width: 100%;
-    margin: 0 auto;
-    padding: 0px;
-    .flex-v;
+    margin: 0;
 }
 
 #header {
-    padding: 4px;
-    box-sizing: border-box;
-    width: 100%;
-    * {
-        display: inline;
-    }
-    #search-form {
-        float: right;
-    }
-}
-
-.flex-h {
-    display: flex;
-    flex-flow: row nowrap;
-}
-.flex-v {
-    display: flex;
-    flex-flow: column nowrap;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1em;
+    >* { display: inline; }
+    #app-name { font-weight: normal; }
+    #search-form { float: right; }
 }
 
 #main {
-    .flex-h;
-    flex: 1 1 100%;
-    .tree{ flex: 2 2 @tree-width; }
-    .lists{ flex: 1 1 100% - @tree-width; }
+    // border: 1px dashed blue;
+    box-sizing: border-box;
+    padding-top: 4em;
+    height: 100%;
+    >div {
+        box-sizing: border-box;
+        display: inline-block;
+    }
+    .col {
+        height: 100%;
+    }
+    #col1 {
+        width: 20%;
+        float: left;
+        #bm-tree1 {
+            ul {
+                margin: 0;
+                padding-left: 1em;
+                list-style: none;
+                li { list-style: none; }
+            }
+        }
+    }
+    #col2 {
+        float:left;
+        >.panel{
+            height: 50%;    // hack for flex auto expand height
+        }
+        max-width: 60%;
+        width: 100%;
+    }
+    #col3 {
+        width: 20%;
+        float: left;
+    }
 }
 
-.container {
-/* width: 5%; */
 
-    display: flex;
-    flex-flow: column nowrap;
+.hide {
+    display: none;
 }
 
 .panel{
-    flex: 1 1 auto;
-
-    display: flex;
-    flex-flow: column nowrap;
-    padding: .1em;
+    position: relative;
     .panel-heading {
-        flex: 0 0 auto;
+        position: absolute;
+        top: 0;
         background-color: #bbe;
-        form { margin: 0; padding: 0 .5em; }
     }
     .panel-body{
-        flex: 1 0 auto;
+        padding-top: 1.2em;
+        box-sizing: border-box;
+        height: 100%;
         overflow: scroll;
-        min-height: 5em;
-        height: 1%;    // hack for flex auto expand height
     }
 }
 
-#bookmarks-tree {
-    ul {
-        margin: 0;
-        padding-left: 1em;
-        list-style: none;
-        li {
-            list-style: none;
-        }
-    }
-}
-
-.sub {
-    display: none;
-}
