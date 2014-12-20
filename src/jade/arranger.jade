@@ -5,30 +5,25 @@ html(lang="en")
         link(href="css/arranger.css", rel="stylesheet")
     body
         div#header
-            h2 Shiori, is a bookmark arranger
+            h2#app-name Shiori, is a bookmark arranger
             form#search-form
-                input#search-text(type="text",placeholder="Keyword", autofocus)
-                // button#search-button Search
-            // button#toggle-sub 2nd panel
+                input#search-text(type="text",placeholder="Search Keyword", autofocus)
         div#main
-            div.container.tree
-                div#panel-bm-tree.panel
-                    div.panel-heading Folders
-                    div.panel-body#bookmarks-tree
+            div.panel.col#col1
+                div.panel-heading Folders
+                div.panel-body#bm-tree1
 
-            div.container.lists
-                div#panel-bm-list.panel
+            div.container.col#col2
+                div.panel#plist1
                     div.panel-heading List
-                    div.panel-body#bookmarks-list
-                div#panel-bm-list.panel.sub
+                    div.panel-body#bm-list1
+                div.panel.sub#plist2
                     div.panel-heading List 2
-                    div.panel-body#bookmarks-list
+                    div.panel-body#bm-list2
 
-            div.container.tree.sub
-                div#panel-bm-list.panel
-                    div.panel-heading Folders 2
-                    div.panel-body#bookmarks-tree2
-
+            div.panel.sub.col#col3
+                div.panel-heading Folders 2
+                div.panel-body#bm-tree2
 
         script(src="js/util.js")
         script(src="js/shiori.js")
