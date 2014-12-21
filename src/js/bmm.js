@@ -5,10 +5,12 @@ shiori.define('bmm.bookmarks', function() {
         if( c ) {
             fun( c );
         }
-        chrome.bookmarks.getChildren( id, function( array ) {
-            bmCache[id] = array;
-            fun( array );
-        });
+        else {
+            chrome.bookmarks.getChildren( id, function( array ) {
+                bmCache[id] = array;
+                fun( array );
+            });
+        }
     };
     return {
         getChildren: getChildren,
