@@ -11,12 +11,12 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64px"
-   height="64px"
+   width="128"
+   height="128"
    id="svg3006"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="icon64 (star).svg"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="icon.svg"
    inkscape:export-filename="/media/Work/wschrome/shiori/icon.png"
    inkscape:export-xdpi="26.71875"
    inkscape:export-ydpi="26.71875">
@@ -59,17 +59,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.7781746"
-     inkscape:cx="33.091205"
-     inkscape:cy="35.727252"
+     inkscape:zoom="2.75"
+     inkscape:cx="-10.738948"
+     inkscape:cy="49.049928"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1301"
-     inkscape:window-height="744"
-     inkscape:window-x="65"
-     inkscape:window-y="24"
+     inkscape:window-width="1304"
+     inkscape:window-height="746"
+     inkscape:window-x="54"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata3011">
@@ -79,48 +79,67 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:groupmode="layer"
-     id="layer2"
-     inkscape:label="Layer">
-    <rect
-       style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-       id="rect2991"
-       width="64.15387"
-       height="64.15387"
-       x="0"
-       y="-0.025304858"
-       rx="4.3877454"
-       ry="6.4406443" />
-  </g>
-  <g
      id="layer1"
      inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
-    <path
-       sodipodi:type="star"
-       style="fill:#ffffff;fill-opacity:1;stroke:none"
-       id="path2993"
-       sodipodi:sides="5"
-       sodipodi:cx="19.541861"
-       sodipodi:cy="16.045303"
-       sodipodi:r1="26.247393"
-       sodipodi:r2="11.054885"
-       sodipodi:arg1="2.1751018"
-       sodipodi:arg2="2.8034203"
-       inkscape:flatsided="false"
-       inkscape:rounded="0.038939582"
-       inkscape:randomized="0"
-       d="M 4.6283365,37.644202 C 4.0360609,37.23525 9.3518806,20.391891 9.1130956,19.71291 8.8743107,19.03393 -5.8143584,9.2257864 -5.608445,8.5361258 c 0.2059133,-0.6896607 17.867579,-0.8389 18.439538,-1.2758144 0.57196,-0.4369143 5.361011,-17.4375524 6.080548,-17.4548334 0.719537,-0.01728 6.319227,16.7338425 6.911502,17.1427946 C 26.415419,7.3572247 44.063884,6.6583968 44.302669,7.3373769 44.541454,8.0163569 30.340587,18.51836 30.134674,19.208021 29.928761,19.897682 36.047061,36.46642 35.475101,36.903334 34.903142,37.340249 20.526834,27.07972 19.807297,27.097001 19.08776,27.114283 5.220612,38.053154 4.6283365,37.644202 z"
-       inkscape:transform-center-x="0.04005556"
-       inkscape:transform-center-y="-2.8160449"
-       transform="matrix(1.1385298,0.02240488,-0.02240488,1.1385298,10.11672,14.500382)"
-       inkscape:export-filename="/media/Work/wschrome/shiori/icon.png"
-       inkscape:export-xdpi="26.71875"
-       inkscape:export-ydpi="26.71875" />
+     inkscape:groupmode="layer"
+     transform="translate(0,64)"
+     style="display:none">
+    <image
+       sodipodi:absref="D:\wschrome\shiori\src\svg\128-square.png"
+       xlink:href="128-square.png"
+       y="-64"
+       x="0"
+       id="image4150"
+       preserveAspectRatio="none"
+       height="128"
+       width="128"
+       style="display:inline" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer"
+     transform="translate(0,64)"
+     style="display:inline">
+    <g
+       style="display:inline"
+       id="g4154"
+       transform="matrix(1.4988008,0,0,1.4988008,16,-47.623742)">
+      <rect
+         ry="6.4406443"
+         rx="4.3877454"
+         y="-0.025304858"
+         x="0"
+         height="64.15387"
+         width="64.15387"
+         id="rect2991"
+         style="fill:#aa0000;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+      <path
+         inkscape:export-ydpi="26.71875"
+         inkscape:export-xdpi="26.71875"
+         inkscape:export-filename="/media/Work/wschrome/shiori/icon.png"
+         transform="matrix(1.1385298,0.02240488,-0.02240488,1.1385298,10.11672,14.500382)"
+         inkscape:transform-center-y="-2.8160449"
+         inkscape:transform-center-x="0.04005556"
+         d="M 4.6283365,37.644202 C 4.0360609,37.23525 9.3518807,20.391891 9.1130958,19.712911 8.8743108,19.033931 -5.8143584,9.2257864 -5.608445,8.5361258 -5.4025317,7.8464651 12.259133,7.697226 12.831093,7.2603116 c 0.57196,-0.4369143 5.361011,-17.4375526 6.080548,-17.4548336 0.719537,-0.01728 6.319226,16.7338423 6.911502,17.1427944 0.592276,0.4089521 18.240741,-0.2898756 18.479526,0.3891045 0.238785,0.67898 -13.962081,11.1809831 -14.167995,11.8706441 -0.205913,0.68966 5.912387,17.258399 5.340427,17.695313 C 34.903142,37.340249 20.526834,27.07972 19.807297,27.097001 19.08776,27.114283 5.220612,38.053154 4.6283365,37.644202 Z"
+         inkscape:randomized="0"
+         inkscape:rounded="0.038939582"
+         inkscape:flatsided="false"
+         sodipodi:arg2="2.8034203"
+         sodipodi:arg1="2.1751018"
+         sodipodi:r2="11.054885"
+         sodipodi:r1="26.247393"
+         sodipodi:cy="16.045303"
+         sodipodi:cx="19.541861"
+         sodipodi:sides="5"
+         id="path2993"
+         style="fill:#ffffff;fill-opacity:1;stroke:none"
+         sodipodi:type="star" />
+    </g>
   </g>
 </svg>
