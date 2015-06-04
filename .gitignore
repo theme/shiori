@@ -4,6 +4,7 @@
 *.png
 *.jpg
 
+nohup.out
 
 node_modules
 

@@ -2,7 +2,8 @@ module.exports = function(grunt) {
     grunt.initConfig({
         copy: {
             main: {
-                files: [{ expand:true, cwd:'src/js/', src:['**'], dest:'pub/js/', filter:'isFile' }]
+                files: [{ expand:true, cwd:'src/js/', src:['**'],
+                    dest:'pub/js/', filter:'isFile' }]
             }
         },
         jade: {
@@ -31,23 +32,6 @@ module.exports = function(grunt) {
                 files: { /*'pub/js/arranger.js': ['src/coffee/arranger.coffee'] */}
             },
         },
-        svg2png: ( function(){
-            var pngsize = [ 16, 19, 48, 128 ];
-            var svgsize = 128.0;
-            // construct task object for grunt task : svg2png
-            var o = {};
-            pngsize.forEach( function( s ) {
-                o['p'+ s.toString(10)] = {
-                    options: { scale: s/svgsize },
-                    files: [ {
-                        cwd: 'src/svg/',
-                        src: 'leaf-shadow.svg',
-                        dest: 'pub/img/icon' + s.toString() + '.png'
-                    } ]
-                };
-            });
-            return o;
-        })(),
         watch: {
             srouceFiles: {
                 files: ['src/**'],
@@ -63,6 +47,49 @@ module.exports = function(grunt) {
                 files: [ 'Gruntfile.js', 'config/*.js' ],
                 options: { reload: true }
             }
+        },
+        respimg: { // require ImgMagic
+            logopng: {
+                options: {
+                    optimize: false,
+                    widths: [16,19,48,128],
+                    resizeFunction: 'adaptive-resize'
+                    // Task-specific options go here.
+                },
+                files:[{
+                    expand:true,
+                    cwd: 'src/svg/',
+                    src: ['leaf-shadow.svg'],
+                    dest: 'pub/img/'
+                }]
+                // Target-specific file lists go here.
+            },
+        },
+        exec :{
+            echo_something: 'echo "this is something"',
+            svg2png: {
+                cmd: function(){
+                    var os = require('os'),
+                        path = require('path');
+                    var inkscape = '';
+                    var cmds = [];
+                    var pngsize = [ 16, 19, 48, 128 ]
+                    if( /^win/.test(os.platform()) ){
+                        inkscape = '"C:\\Program Files\\Inkscape\\inkscape.exe"';
+                    } else { inkscape = 'inkscape'; }
+                    pngsize.forEach( function( s ) {
+                        var dest = path.resolve('pub/img/icon'+s.toString()+'.png');
+                        var src = path.resolve('src/svg/leaf-shadow.svg');
+                        cmds.push( inkscape +
+                            ' --export-png ' + ' "'+ dest + '" ' +
+                            ' -w ' + s.toString() +
+                            ' "' + src + '" ' );
+
+                    } )
+                    console.log(cmds.join('  &&  '));
+                    return cmds.join('  &&  ');
+                }
+            }
         }
     });
     // Load the plugin that provides the "less" task.
@@ -71,8 +98,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-coffee');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-svg2png');
+    grunt.loadNpmTasks('grunt-respimg');
+    grunt.loadNpmTasks('grunt-exec');
+
 
     // Default task(s).
-    grunt.registerTask('default', ['copy','jade','less','coffee','svg2png']);
+    grunt.registerTask('default', ['copy','jade','less','coffee']);
 };
