@@ -16,12 +16,6 @@ module.exports = function(grunt) {
                 files: { "pub/css/arranger.css": "css/arranger.less" }
             }
         },
-        coffee: {
-            compileBare: {
-                options: { bare: false },
-                files: { }
-            },
-        },
         watch: {
             sync: {
                 files: ['src/js/**/*.js', 'src/manifest.json'],
@@ -40,13 +34,6 @@ module.exports = function(grunt) {
             less: {
                 files: ['src/**/*.less'],
                 tasks: ['less'],
-                options: { spawn: false, interrupt: true, debounceDelay: 250,
-                    event: ['changed'] //changed, added, deleted, all
-                }
-            },
-            coffee: {
-                files: ['src/**/*.coffee'],
-                tasks: ['coffee'],
                 options: { spawn: false, interrupt: true, debounceDelay: 250,
                     event: ['changed'] //changed, added, deleted, all
                 }
@@ -113,12 +100,11 @@ module.exports = function(grunt) {
     // Load the plugin that provides the "less" task.
     grunt.loadNpmTasks('grunt-contrib-jade');
     grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-contrib-coffee');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-exec');
     grunt.loadNpmTasks('grunt-sync');
 
 
     // Default task(s).
-    grunt.registerTask('make', ['sync','jade','less','coffee','exec:svg2png']);
+    grunt.registerTask('make', ['sync','jade','less','exec:svg2png']);
 };
