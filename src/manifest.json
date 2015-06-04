@@ -17,7 +17,7 @@
     "default_popup": "src/browser_action/browser_action.html"
   },
   "chrome_url_overrides": {
-    // "bookmarks": "src/override/override.html"
+    "bookmarks": "src/override/bookmarks.html"
   },
   "permissions": [
     "bookmarks",

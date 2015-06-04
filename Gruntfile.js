@@ -2,8 +2,18 @@ module.exports = function(grunt) {
     grunt.initConfig({
         jade: {
             compile: {
-                options: { pretty: true, data: { debug: false } },
-                files: { "pub/arranger.html": "src/arranger.jade" }
+                options: {
+                    pretty: true
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'src/',
+                    src: ['**/*.jade' ],
+                    dest: 'pub/',
+                    rename: function(dest,src){
+                        return dest + src.replace(/.jade$/, '.html');
+                    }
+                }],
             }
         },
         less: {
@@ -18,14 +28,14 @@ module.exports = function(grunt) {
         },
         watch: {
             sync: {
-                files: ['src/js/**/*.js', 'src/manifest.json'],
+                files: ['src/**/*.json', 'src/**/*.html', 'src/**/*.js', 'src/**/*.css'],
                 tasks: ['sync'],
                 options: { spawn: false, interrupt: true, debounceDelay: 250,
                     event: ['changed'] //changed, added, deleted, all
                 }
             },
             jade: {
-                files: ['src/*.jade'],
+                files: ['src/**/*.jade'],
                 tasks: ['jade'],
                 options: { spawn: false, interrupt: true, debounceDelay: 250,
                     event: ['changed'] //changed, added, deleted, all
@@ -91,9 +101,9 @@ module.exports = function(grunt) {
                     dest: 'pub'
                 }],
                 pretend: false, // !!! Don't do any disk operations - just write log
-                verbose: true, // Display log messages when copying files 
-                ignoreInDest: "**/*.js", // Never remove js files from destination 
-                updateAndDelete: false// Remove all files from dest that are not found in src 
+                verbose: true, // Display log messages when copying files
+                ignoreInDest: "**/*.js", // Never remove js files from destination
+                updateAndDelete: false// Remove all files from dest that are not found in src
             }
         }
     });
