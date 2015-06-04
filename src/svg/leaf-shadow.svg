@@ -15,7 +15,7 @@
    height="128"
    id="svg3006"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="leaf-shadow.svg"
    inkscape:export-filename="D:\wschrome\shiori\src\svg\icon-shadow.png"
    inkscape:export-xdpi="90"
@@ -145,11 +145,13 @@
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1304"
-     inkscape:window-height="746"
-     inkscape:window-x="54"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-width="1317"
+     inkscape:window-height="744"
+     inkscape:window-x="49"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     showguides="true"
+     showborder="false" />
   <metadata
      id="metadata3011">
     <rdf:RDF>

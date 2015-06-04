@@ -4,13 +4,15 @@
     var toggleSub;
     var handleKeyDown;
 
+    var initTree;
+
     toggleSub = function(){
         var x = document.querySelectorAll('#main');
         for( var i = 0 ; i< x.length ; i++){
             x[i].classList.toggle('double');
         }
     };
-    
+
     listBookmarks = function( destDivName, bmId ){
         var dest = $('#' + destDivName);
         while( dest && dest.firstChild ){ // clear
@@ -103,6 +105,32 @@
         }
     };
 
+    var forest_ = [];
+    forest_.createTree = function(){
+      var tree = new bmm.BookmarkTree();
+
+      this.append(tree);
+      return tree;
+    };
+
+    // add TreeView to DOM
+    initTree = function( divId ){
+      var div = $('#'+divId);
+
+      assert(div, 'initTree with no target div');
+
+      // init View obj
+      var tv = bmm.bookmarks.createTreeView();
+      // init VM obj & bind to Model
+      var tvm = bmm.bookmarks.createTreeViewModel();
+      tvm.setBackend(chrome.bookmarks);
+      // set VM obj of View ( set reference & register events )
+      tv.setViewModel(tvm);
+      // register View events to handler in Controller ? BMM ? @TODO
+      tv.addEventListener('click', this.handleTreeViewClick());
+      //...
+    };
+
     document.onreadystatechange = function () {
         if (document.readyState == "complete") {
             var searchFun = (function(e) {
@@ -118,9 +146,14 @@
                     listBookmarks('bm-list1', e.target.id );
                 }
             }),true);
+            // $('#dbg1').addEventListener('click', function(e){
+                // console.log(e.clientX, e.clientY);
+            // });
             loadBookmarkTree('bm-tree1');
 
             document.addEventListener('keydown', handleKeyDown);
+
+            initTree('bm-tree1');
         }
     };
 

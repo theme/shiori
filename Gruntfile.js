@@ -73,23 +73,6 @@ module.exports = function(grunt) {
                 options: { reload: true }
             }
         },
-        respimg: { // require ImgMagic
-            logopng: {
-                options: {
-                    optimize: false,
-                    widths: [16,19,48,128],
-                    resizeFunction: 'adaptive-resize'
-                    // Task-specific options go here.
-                },
-                files:[{
-                    expand:true,
-                    cwd: 'src/svg/',
-                    src: ['leaf-shadow.svg'],
-                    dest: 'pub/img/'
-                }]
-                // Target-specific file lists go here.
-            },
-        },
         exec :{
             echo_something: 'echo "this is something"',
             svg2png: {
@@ -122,7 +105,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-coffee');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-respimg');
     grunt.loadNpmTasks('grunt-exec');
 
 

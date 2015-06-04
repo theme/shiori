@@ -1,9 +1,12 @@
-var global = this ;
+var global = this;
 
-this.shiori = ( function(){
+/** Platform, package, object property, and Event support. **/
+this.ki = ( function(){
     "use strict";
 
-    /* exportPath() : export dot seperated object name chain */
+    /**
+     * Export dot seperated object name chain
+     */
     function exportPath( path, opt_obj, opt_to_obj){
         var parts = path.split('.');
         var cur = opt_to_obj || global;
@@ -23,7 +26,10 @@ this.shiori = ( function(){
         return cur;
     }
 
-    /* add fields of fun returned object to name */
+    /**
+     * Add fields of fun returned object to name.
+     * @param {!string} name a path string like 'foo.bar'.
+     */
     function define( name, fun ){
         var obj = exportPath( name );
         var exports = fun();
@@ -40,4 +46,3 @@ this.shiori = ( function(){
         define : define
     };
 })();
-
