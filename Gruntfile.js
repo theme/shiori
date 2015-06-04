@@ -1,47 +1,37 @@
 module.exports = function(grunt) {
     grunt.initConfig({
-        copy: {
-            js: {
-                files: [{ expand:true, cwd:'src/js/', src:['**'],
-                    dest:'pub/js/', filter:'isFile' }]
-            }
-        },
         jade: {
             compile: {
                 options: { pretty: true, data: { debug: false } },
-                files: { "pub/arranger.html": "src/jade/arranger.jade" }
+                files: { "pub/arranger.html": "src/arranger.jade" }
             }
         },
         less: {
-            development: { options: { paths: ["src/less"] }, files: { } },
-            production: {
+            compile: {
                 options: {
-                    paths: ["src/less"],
+                    paths: ["css"],
                     cleancss: true,
-                    modifyVars: {
-                        //imgPath: '"http://mycdn.com/path/to/images"',
-                        //bgColor: 'red'
-                    }
+                    modifyVars: { /* /imgPath: '"http://site/images"' */ }
                 },
-                files: { "pub/css/arranger.css": "src/less/arranger.less" }
+                files: { "pub/css/arranger.css": "css/arranger.less" }
             }
         },
         coffee: {
             compileBare: {
                 options: { bare: false },
-                files: { /*'pub/js/arranger.js': ['src/coffee/arranger.coffee'] */}
+                files: { }
             },
         },
         watch: {
-            js: {
-                files: ['src/**/*.js'],
-                tasks: ['copy:js'],
+            sync: {
+                files: ['src/js/**/*.js', 'src/manifest.json'],
+                tasks: ['sync'],
                 options: { spawn: false, interrupt: true, debounceDelay: 250,
                     event: ['changed'] //changed, added, deleted, all
                 }
             },
             jade: {
-                files: ['src/**/*.jade'],
+                files: ['src/*.jade'],
                 tasks: ['jade'],
                 options: { spawn: false, interrupt: true, debounceDelay: 250,
                     event: ['changed'] //changed, added, deleted, all
@@ -86,28 +76,49 @@ module.exports = function(grunt) {
                         inkscape = '"C:\\Program Files\\Inkscape\\inkscape.exe"';
                     } else { inkscape = 'inkscape'; }
                     pngsize.forEach( function( s ) {
-                        var dest = path.resolve('pub/img/icon'+s.toString()+'.png');
-                        var src = path.resolve('src/svg/leaf-shadow.svg');
+                        var dest = path.resolve('pub/icons/icon'+s.toString()+'.png');
+                        var src = path.resolve('src/icons/leaf-shadow.svg');
                         cmds.push( inkscape +
-                            ' --export-png ' + ' "'+ dest + '" ' +
-                            ' -w ' + s.toString() +
-                            ' "' + src + '" ' );
+                                  ' --export-png ' + ' "'+ dest + '" ' +
+                                  ' -w ' + s.toString() +
+                                  ' "' + src + '" ' );
                     } )
                     console.log(cmds.join('  &&  '));
                     return cmds.join('  &&  ');
                 }
             }
+        },
+        sync: {
+            main: {
+                files: [{
+                    cwd: 'src',
+                    src: [
+                        '**', /* Include everything */
+                        '!**/*.jade', /* but exclude jade files */
+                        '!**/*.less',
+                        '!**/*.coffee',
+                        '!**/*.svg',
+                        '!**/*.png',
+                        '!**/*\~'
+                    ],
+                    dest: 'pub'
+                }],
+                pretend: false, // !!! Don't do any disk operations - just write log
+                verbose: true, // Display log messages when copying files 
+                ignoreInDest: "**/*.js", // Never remove js files from destination 
+                updateAndDelete: false// Remove all files from dest that are not found in src 
+            }
         }
     });
     // Load the plugin that provides the "less" task.
-    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-jade');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-coffee');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-exec');
+    grunt.loadNpmTasks('grunt-sync');
 
 
     // Default task(s).
-    grunt.registerTask('make', ['copy','jade','less','coffee','exec:svg2png']);
+    grunt.registerTask('make', ['sync','jade','less','coffee','exec:svg2png']);
 };
