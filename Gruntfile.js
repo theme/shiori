@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
     grunt.initConfig({
         copy: {
-            main: {
+            js: {
                 files: [{ expand:true, cwd:'src/js/', src:['**'],
                     dest:'pub/js/', filter:'isFile' }]
             }
@@ -33,13 +33,38 @@ module.exports = function(grunt) {
             },
         },
         watch: {
-            srouceFiles: {
-                files: ['src/**'],
-                tasks: ['default'],
-                options: {
-                    spawn: false,
-                    interrupt: true,
-                    debounceDelay: 250,
+            js: {
+                files: ['src/**/*.js'],
+                tasks: ['copy:js'],
+                options: { spawn: false, interrupt: true, debounceDelay: 250,
+                    event: ['changed'] //changed, added, deleted, all
+                }
+            },
+            jade: {
+                files: ['src/**/*.jade'],
+                tasks: ['jade'],
+                options: { spawn: false, interrupt: true, debounceDelay: 250,
+                    event: ['changed'] //changed, added, deleted, all
+                }
+            },
+            less: {
+                files: ['src/**/*.less'],
+                tasks: ['less'],
+                options: { spawn: false, interrupt: true, debounceDelay: 250,
+                    event: ['changed'] //changed, added, deleted, all
+                }
+            },
+            coffee: {
+                files: ['src/**/*.coffee'],
+                tasks: ['coffee'],
+                options: { spawn: false, interrupt: true, debounceDelay: 250,
+                    event: ['changed'] //changed, added, deleted, all
+                }
+            },
+            svg: {
+                files: ['src/**/*.svg'],
+                tasks: ['exec:svg2png'],
+                options: { spawn: false, interrupt: true, debounceDelay: 250,
                     event: ['changed'] //changed, added, deleted, all
                 }
             },
@@ -84,7 +109,6 @@ module.exports = function(grunt) {
                             ' --export-png ' + ' "'+ dest + '" ' +
                             ' -w ' + s.toString() +
                             ' "' + src + '" ' );
-
                     } )
                     console.log(cmds.join('  &&  '));
                     return cmds.join('  &&  ');
@@ -103,5 +127,5 @@ module.exports = function(grunt) {
 
 
     // Default task(s).
-    grunt.registerTask('default', ['copy','jade','less','coffee']);
+    grunt.registerTask('make', ['copy','jade','less','coffee','exec:svg2png']);
 };
