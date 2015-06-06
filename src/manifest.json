@@ -27,6 +27,7 @@
     "chrome://favicon/",
     "contextMenus",
     "history",
+    "tabs",
     "geolocation"
   ],
   "omnibox": {
