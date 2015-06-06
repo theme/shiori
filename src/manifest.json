@@ -10,11 +10,14 @@
     "128": "icons/icon128.png"
   },
   "default_locale": "en",
+   "background": {
+     "scripts": ["js/background.js"],
+     "persistent": false
+   },
   "options_page": "src/options/index.html",
   "browser_action": {
     "default_icon": "icons/icon19.png",
-    "default_title": "Shiori 0.1",
-    "default_popup": "src/browser_action/browser_action.html"
+    "default_title": "Shiori 0.1"
   },
   "chrome_url_overrides": {
     "bookmarks": "src/override/bookmarks.html"
