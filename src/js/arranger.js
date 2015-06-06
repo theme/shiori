@@ -6,20 +6,20 @@
 
     var initTree;
 
-    toggleSub = function(){
+    toggleSub = function() {
         var x = document.querySelectorAll('#main');
-        for( var i = 0 ; i< x.length ; i++){
+        for (var i = 0; i < x.length; i++) {
             x[i].classList.toggle('double');
         }
     };
 
-    listBookmarks = function( destDivName, bmId ){
+    listBookmarks = function(destDivName, bmId ) {
         var dest = $('#' + destDivName);
-        while( dest && dest.firstChild ){ // clear
+        while (dest && dest.firstChild) { // clear
             dest.removeChild(dest.firstChild);
         }
-        bmm.bookmarks.getChildren(bmId, function(bmarray){
-            dest.appendChild(dumpTreeNodes(bmarray, false, 1) );
+        bmm.bookmarks.getChildren(bmId, function(bmarray) {
+            dest.appendChild(dumpTreeNodes(bmarray, false, 1));
         });
     };
 
@@ -33,12 +33,12 @@
         }
     };
 
-    dumpBookmarks = function( destDivName, query ) {
+    dumpBookmarks = function(destDivName, query ) {
         var dest = $('#' + destDivName);
-        while( dest && dest.firstChild ){
+        while (dest && dest.firstChild) {
             dest.removeChild(dest.firstChild);
         }
-        if( query ) {
+        if (query) {
             chrome.bookmarks.search(query, function(bmarray) {
                 dest.appendChild(dumpTreeNodes(bmarray));
             });
@@ -55,10 +55,10 @@
         list = $('<ul>');
         curr_depth = curr_depth || 0;
         max_depth = max_depth || -1;
-        if( --max_depth == -1 ) return list;
+        if (--max_depth == -1) return list;
         for (_i = 0, _len = nodeArray.length; _i < _len; _i++) {
             node = nodeArray[_i];
-            if ( node.url && dir_only){   // is link
+            if (node.url && dir_only) {   // is link
                 continue;
             }
             list.appendChild(dumpNode(node, dir_only, max_depth, curr_depth));
@@ -69,16 +69,16 @@
     dumpNode = function(bmNode, dir_only, max_depth, curr_depth) {
         var li = $(bmNode.title ? '<li>' : '<div>');
 
-        li.appendChild( makeNode(bmNode, curr_depth) );
-        li.setAttribute( 'draggable', 'true' );
+        li.appendChild(makeNode(bmNode, curr_depth));
+        li.setAttribute('draggable', 'true');
 
-        if ( bmNode.children && bmNode.children.length > 0) {
+        if (bmNode.children && bmNode.children.length > 0) {
             li.appendChild(dumpTreeNodes(bmNode.children, dir_only, max_depth, ++curr_depth));
         }
         return li;
     };
 
-    makeNode = function(bmNode, depth){
+    makeNode = function(bmNode, depth) {
         var anchor, folder, span;
         span = $('<span>');
         if (bmNode.title) {
@@ -86,27 +86,27 @@
                 anchor = $('<a>');
                 anchor.setAttribute('id', bmNode.id);
                 anchor.setAttribute('href', bmNode.url);
-                anchor.setAttribute('target', "_blank");
-                anchor.innerHTML= '['+ depth +'/' + bmNode.id + '/' + bmNode.index + ']' + bmNode.title;
+                anchor.setAttribute('target', '_blank');
+                anchor.innerHTML = '[' + depth + '/' + bmNode.id + '/' + bmNode.index + ']' + bmNode.title;
                 span.appendChild(anchor);
             } else {
                 folder = $('<span>');
                 folder.setAttribute('id', bmNode.id);
-                folder.innerHTML = '['+ depth +'/' + bmNode.id + '/' + bmNode.index + '/' + bmNode.title + ']';
+                folder.innerHTML = '[' + depth + '/' + bmNode.id + '/' + bmNode.index + '/' + bmNode.title + ']';
                 span.appendChild(folder);
             }
         }
         return span;
     };
 
-    handleKeyDown = function( e ) {
-        if( e.ctrlKey && e.keyIdentifier == "U+0032" ){ // Ctrl-2
+    handleKeyDown = function(e ) {
+        if (e.ctrlKey && e.keyIdentifier == 'U+0032') { // Ctrl-2
             toggleSub();
         }
     };
 
     var forest_ = [];
-    forest_.createTree = function(){
+    forest_.createTree = function() {
       var tree = new bmm.BookmarkTree();
 
       this.append(tree);
@@ -131,8 +131,8 @@
     //   //...
     // };
 
-    document.onreadystatechange = function () {
-        if (document.readyState == "complete") {
+    document.onreadystatechange = function() {
+        if (document.readyState == 'complete') {
             var searchFun = (function(e) {
                 var query = $('#search-text').value;
                 searchBookmarks(query);
@@ -141,11 +141,11 @@
             // $('#search-button').addEventListener('click', searchFun);
             // $('#toggle-sub').addEventListener('click', toggleSub);
             $('#search-form').addEventListener('submit', searchFun);
-            $('#bm-tree1').addEventListener('click',( function(e) {
-                if( e.target.id ){
-                    listBookmarks('bm-list1', e.target.id );
+            $('#bm-tree1').addEventListener('click', (function(e) {
+                if (e.target.id) {
+                    listBookmarks('bm-list1', e.target.id);
                 }
-            }),true);
+            }), true);
             // $('#dbg1').addEventListener('click', function(e){
                 // console.log(e.clientX, e.clientY);
             // });
