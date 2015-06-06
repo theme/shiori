@@ -113,23 +113,23 @@
       return tree;
     };
 
-    // add TreeView to DOM
-    initTree = function( divId ){
-      var div = $('#'+divId);
-
-      assert(div, 'initTree with no target div');
-
-      // init View obj
-      var tv = bmm.bookmarks.createTreeView();
-      // init VM obj & bind to Model
-      var tvm = bmm.bookmarks.createTreeViewModel();
-      tvm.setBackend(chrome.bookmarks);
-      // set VM obj of View ( set reference & register events )
-      tv.setViewModel(tvm);
-      // register View events to handler in Controller ? BMM ? @TODO
-      tv.addEventListener('click', this.handleTreeViewClick());
-      //...
-    };
+    // // add TreeView to DOM
+    // initTree = function( divId ){
+    //   var div = $('#'+divId);
+    //
+    //   assert(div, 'initTree with no target div');
+    //
+    //   // init View obj
+    //   var tv = bmm.bookmarks.createTreeView();
+    //   // init VM obj & bind to Model
+    //   var tvm = bmm.bookmarks.createTreeViewModel();
+    //   tvm.setBackend(chrome.bookmarks);
+    //   // set VM obj of View ( set reference & register events )
+    //   tv.setViewModel(tvm);
+    //   // register View events to handler in Controller ? BMM ? @TODO
+    //   tv.addEventListener('click', this.handleTreeViewClick());
+    //   //...
+    // };
 
     document.onreadystatechange = function () {
         if (document.readyState == "complete") {
