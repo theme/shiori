@@ -23,7 +23,15 @@ module.exports = function(grunt) {
                     cleancss: true,
                     modifyVars: { /* /imgPath: '"http://site/images"' */ }
                 },
-                files: { "src/css/arranger.css": "src/css/arranger.less" }
+                files: [{
+                    expand: true,
+                    cwd: 'src/',
+                    src: ['**/*.less' ],
+                    dest: 'src/',
+                    rename: function(dest,src){
+                        return dest + src.replace(/.less$/, '.css');
+                    }
+                }],
             }
         },
         watch: {
