@@ -14,7 +14,7 @@
     };
 
     listBookmarks = function(destDivName, bmId ) {
-        var dest = $('#' + destDivName);
+        var dest = $('' + destDivName);
         while (dest && dest.firstChild) { // clear
             dest.removeChild(dest.firstChild);
         }
@@ -34,7 +34,7 @@
     };
 
     dumpBookmarks = function(destDivName, query ) {
-        var dest = $('#' + destDivName);
+        var dest = $('' + destDivName);
         while (dest && dest.firstChild) {
             dest.removeChild(dest.firstChild);
         }
@@ -52,7 +52,7 @@
 
     dumpTreeNodes = function(nodeArray, dir_only, max_depth, curr_depth) {
         var list, node, _i, _len;
-        list = $('<ul>');
+        list = document.createElement('ul');
         curr_depth = curr_depth || 0;
         max_depth = max_depth || -1;
         if (--max_depth == -1) return list;
@@ -67,7 +67,7 @@
     };
 
     dumpNode = function(bmNode, dir_only, max_depth, curr_depth) {
-        var li = $(bmNode.title ? '<li>' : '<div>');
+        var li = document.createElement(bmNode.title ? 'li' : 'div');
 
         li.appendChild(makeNode(bmNode, curr_depth));
         li.setAttribute('draggable', 'true');
@@ -80,17 +80,17 @@
 
     makeNode = function(bmNode, depth) {
         var anchor, folder, span;
-        span = $('<span>');
+        span = document.createElement('span');
         if (bmNode.title) {
             if (bmNode.url) {
-                anchor = $('<a>');
+                anchor = document.createElement('a');
                 anchor.setAttribute('id', bmNode.id);
                 anchor.setAttribute('href', bmNode.url);
                 anchor.setAttribute('target', '_blank');
                 anchor.innerHTML = '[' + depth + '/' + bmNode.id + '/' + bmNode.index + ']' + bmNode.title;
                 span.appendChild(anchor);
             } else {
-                folder = $('<span>');
+                folder = document.createElement('span');
                 folder.setAttribute('id', bmNode.id);
                 folder.innerHTML = '[' + depth + '/' + bmNode.id + '/' + bmNode.index + '/' + bmNode.title + ']';
                 span.appendChild(folder);
@@ -115,7 +115,7 @@
 
     // // add TreeView to DOM
     // initTree = function( divId ){
-    //   var div = $('#'+divId);
+    //   var div = $(''+divId);
     //
     //   assert(div, 'initTree with no target div');
     //
@@ -134,26 +134,26 @@
     document.onreadystatechange = function() {
         if (document.readyState == 'complete') {
             var searchFun = (function(e) {
-                var query = $('#search-text').value;
+                var query = $('search-text').value;
                 searchBookmarks(query);
                 e.preventDefault();
             });
-            // $('#search-button').addEventListener('click', searchFun);
-            // $('#toggle-sub').addEventListener('click', toggleSub);
-            $('#search-form').addEventListener('submit', searchFun);
-            $('#bm-tree1').addEventListener('click', (function(e) {
+            // $('search-button').addEventListener('click', searchFun);
+            // $('toggle-sub').addEventListener('click', toggleSub);
+            $('search-form').addEventListener('submit', searchFun);
+            $('bm-tree1').addEventListener('click', (function(e) {
                 if (e.target.id) {
                     listBookmarks('bm-list1', e.target.id);
                 }
             }), true);
-            // $('#dbg1').addEventListener('click', function(e){
+            // $('dbg1').addEventListener('click', function(e){
                 // console.log(e.clientX, e.clientY);
             // });
             loadBookmarkTree('bm-tree1');
 
             document.addEventListener('keydown', handleKeyDown);
 
-            initTree('bm-tree1');
+            // initTree('bm-tree1');
         }
     };
 
