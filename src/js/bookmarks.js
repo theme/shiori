@@ -49,7 +49,6 @@
         }
     };
 
-
     dumpTreeNodes = function(nodeArray, dir_only, max_depth, curr_depth) {
         var list, node, _i, _len;
         list = document.createElement('ul');
@@ -117,7 +116,6 @@
     // initTree = function( divId ){
     //   var div = $(''+divId);
     //
-    //   assert(div, 'initTree with no target div');
     //
     //   // init View obj
     //   var tv = bmm.bookmarks.createTreeView();
