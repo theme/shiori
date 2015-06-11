@@ -23,17 +23,13 @@ ki.define('bmm.bookmarks', function() {
 	  this.el_ = new ki.ui.Tree();
 	};
 
-	BookmarkTree.prototype = {
-	  __proto__: ki.ui.Tree,
-
-		setViewModel: function(vm){
-			this.vm_ = vm;
-			vm.addEventListener('update', this.reload );
-		},
-
-		reload: function(vm){
-
-		}
+	BookmarkTree.prototype = Object.create(ki.ui.Tree);
+	BookmarkTree.prototype.setViewModel = function(vm){
+		this.vm_ = vm;
+		vm.addEventListener('update', this.reload );
+	};
+	BookmarkTree.prototype.reload = function(vm){
+		console.log('DBG: BookmarkTree.prototype.reload()');
 	};
 
 	var createTreeView = function(){
