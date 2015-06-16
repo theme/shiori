@@ -69,7 +69,6 @@ module.exports = function(grunt) {
             }
         },
         exec :{
-            echo_something: 'echo "this is something"',
             svg2png: {
                 cmd: function(){
                     var os = require('os'),
