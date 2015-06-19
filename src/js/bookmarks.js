@@ -133,6 +133,29 @@
             loadBookmarkTree('bm-tree1');
 
             document.addEventListener('keydown', handleKeyDown);
+
+            // listen for bookmark change
+            chrome.bookmarks.onCreated.addListener(function(id, bookmark){
+                console.log('cb created'+ id + bookmark.id + bookmark.title + bookmark.url );
+            });
+            chrome.bookmarks.onRemoved.addListener(function(id, removeInfo){
+                console.log('cb removed'+ id , removeInfo);
+            });
+            chrome.bookmarks.onChanged.addListener(function(id, changeInfo){
+                console.log('cb changed'+ id , changeInfo);
+            });
+            chrome.bookmarks.onMoved.addListener(function(id, moveInfo){
+                console.log('cb moved'+ id , moveInfo);
+            });
+            chrome.bookmarks.onChildrenReordered.addListener(function(id, reorderInfo){
+                console.log('cb onChildrenReordered'+ id , reorderInfo);
+            });
+            chrome.bookmarks.onImportBegan.addListener(function(){
+                console.log('cb onImportBegan');
+            });
+            chrome.bookmarks.onImportEnded.addListener(function(){
+                console.log('cb onImportEnded');
+            });
         }
     };
 
