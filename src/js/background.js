@@ -1,5 +1,5 @@
 function getArrangerUrl() {
-  var url = 'chrome://bookmarks/';
+  var url = chrome.extension.getURL('src/override/bookmarks.html');
   return url;
 }
 

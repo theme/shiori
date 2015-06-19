@@ -20,7 +20,7 @@
     "default_title": "Shiori 0.1"
   },
   "chrome_url_overrides": {
-    "bookmarks": "src/override/bookmarks.html"
+    /* "bookmarks": "src/override/bookmarks.html" */
   },
   "permissions": [
     "bookmarks",
