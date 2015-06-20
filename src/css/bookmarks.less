@@ -44,14 +44,23 @@ html, body {
                 margin: 0;
                 padding-left: 1em;
                 list-style: none;
-                li { list-style: none; }
+                li span{
+                    display: block;
+                    list-style: none;
+                }
             }
         }
     }
     .panel.sub { display: none; }
     #col2 {
         width: 80%;
-        #plist1 { height: 100%; }
+        #plist1 {
+            height: 100%;
+            li span{
+                display: block;
+                list-style: none;
+            }
+        }
     }
 }
 
@@ -63,6 +72,10 @@ html, body {
             width: 100%;
             height: 50%;
             display: inline-block;
+            li span{
+                display: block;
+                list-style: none;
+            }
         }
     }
     #col3 {
@@ -73,7 +86,10 @@ html, body {
                 margin: 0;
                 padding-left: 1em;
                 list-style: none;
-                li { list-style: none; }
+                li span{
+                    display: block;
+                    list-style: none;
+                }
             }
         }
     }

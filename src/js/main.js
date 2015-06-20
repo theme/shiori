@@ -184,32 +184,35 @@
             }), true);
             // TODO: reuse these method on bm-tree1 and bm-tree2
             $('bm-tree2').addEventListener('contextmenu', function(ev) {
-                console.log('context menu', ev.target);
                 ev.preventDefault();
                 // TODO: draw menu
+                var bmNode = ev.target;
+                while (bmNode !== null && (typeof bmNode.className === 'undefined'
+                    || !bmNode.className.match(/(?:^|\s)bookmark(?!\S)/)) ){
+                        bmNode = bmNode.parentNode; // search up for bookmarkNode
+                    }
+                if (bmNode === null){return false;}
                 if ( typeof bmm.menu === "undefined"){
                     bmm.menu = document.createElement('div');
                     bmm.menu.setAttribute('class', 'context-menu');
                 } else {
-                    if ( ev.target === bmm.menu ) { return false; }
-                    if ( ev.target === bmm.menu.parentNode ) { return false; }
-                    if ( ev.target.parentNode === bmm.menu) { return false; }
+                    if ( bmNode === bmm.menu ) { return false; }
+                    if ( bmNode === bmm.menu.parentNode ) { return false; }
                     bmm.menu.parentNode.removeChild(bmm.menu);
                 }
-                bmm.debug = ev.target;
-                var rect = ev.target.getBoundingClientRect();
+                var rect = bmNode.getBoundingClientRect();
                 bmm.menu.innerHTML =
                     '<p id="cmd-recycle" class="menu-item cmd">Recycle</p>\
-                    <p id="cmd-rename" class="menu-item cmd">Rename</p>\
-                    <p id="cmd-copy" class="menu-item cmd">Copy</p>\
+                <p id="cmd-rename" class="menu-item cmd">Rename</p>\
+                <p id="cmd-copy" class="menu-item cmd">Copy</p>\
                 <style> p.menu-item {\
-                    display:inline-block;\
-                    margin: 0 1em;\
-                    heith: 2em;\
-                    background-color: #beb\
+                display:inline-block;\
+                margin: 0 1em;\
+                heith: 2em;\
+                background-color: #beb\
                 }<style>';
-                ev.target.appendChild(bmm.menu);
-                bmm.menu.parentNode = ev.target;
+                bmNode.appendChild(bmm.menu);
+                bmm.menu.parentNode = bmNode;
                 return false; // disable default contest menu
             }, false);
             // $('dbg1').addEventListener('click', function(e){
