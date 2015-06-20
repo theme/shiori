@@ -163,22 +163,34 @@
                 }
             }), true);
             $('bm-tree2').addEventListener('click', (function(e) {
+                console.log('click', e.target);
                 if (e.target.getAttribute('bmid')) {
                     listBookmarks('bm-list2', e.target.getAttribute('bmid'));
+                }
+                if (/\s*cmd\s*/.test(e.target.className)){
+                    console.log('click a cmd!!', e.target.id);
+                    switch( e.target.id ){
+                        case "cmd-recycle": // move to recycle bin
+                            // ensure recycle bin folder TODO
+                            // chrome.bookmarks.move(id, dest, callback);
+                            // bmm.menu.getParentBookmarkNode());
+                            break;
+                        case "cmd-rename": // move to recycle bin
+                            break;
+                        case "cmd-copy": // move to recycle bin
+                            break;
+                    }
                 }
             }), true);
             // TODO: reuse these method on bm-tree1 and bm-tree2
             $('bm-tree2').addEventListener('contextmenu', function(ev) {
-                console.log('contextmenu sig');
+                console.log('context menu', ev.target);
                 ev.preventDefault();
                 // TODO: draw menu
                 if ( typeof bmm.menu === "undefined"){
-                    console.log('contextmenu sig new menu');
                     bmm.menu = document.createElement('div');
+                    bmm.menu.setAttribute('class', 'context-menu');
                 } else {
-                    console.log('contextmenu sig move ');
-                    console.log('ev.target', ev.target);
-                    console.log('bmm.menu', bmm.menu);
                     if ( ev.target === bmm.menu ) { return false; }
                     if ( ev.target === bmm.menu.parentNode ) { return false; }
                     if ( ev.target.parentNode === bmm.menu) { return false; }
@@ -186,9 +198,13 @@
                 }
                 bmm.debug = ev.target;
                 var rect = ev.target.getBoundingClientRect();
-                bmm.menu.innerHTML = '<p class="menu-item">I am menu item</p>\
+                bmm.menu.innerHTML =
+                    '<p id="cmd-recycle" class="menu-item cmd">Recycle</p>\
+                    <p id="cmd-rename" class="menu-item cmd">Rename</p>\
+                    <p id="cmd-copy" class="menu-item cmd">Copy</p>\
                 <style> p.menu-item {\
                     display:inline-block;\
+                    margin: 0 1em;\
                     heith: 2em;\
                     background-color: #beb\
                 }<style>';
