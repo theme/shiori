@@ -162,6 +162,40 @@
                     listBookmarks('bm-list1', e.target.getAttribute('bmid'));
                 }
             }), true);
+            $('bm-tree2').addEventListener('click', (function(e) {
+                if (e.target.getAttribute('bmid')) {
+                    listBookmarks('bm-list2', e.target.getAttribute('bmid'));
+                }
+            }), true);
+            // TODO: reuse these method on bm-tree1 and bm-tree2
+            $('bm-tree2').addEventListener('contextmenu', function(ev) {
+                console.log('contextmenu sig');
+                ev.preventDefault();
+                // TODO: draw menu
+                if ( typeof bmm.menu === "undefined"){
+                    console.log('contextmenu sig new menu');
+                    bmm.menu = document.createElement('div');
+                } else {
+                    console.log('contextmenu sig move ');
+                    console.log('ev.target', ev.target);
+                    console.log('bmm.menu', bmm.menu);
+                    if ( ev.target === bmm.menu ) { return false; }
+                    if ( ev.target === bmm.menu.parentNode ) { return false; }
+                    if ( ev.target.parentNode === bmm.menu) { return false; }
+                    bmm.menu.parentNode.removeChild(bmm.menu);
+                }
+                bmm.debug = ev.target;
+                var rect = ev.target.getBoundingClientRect();
+                bmm.menu.innerHTML = '<p class="menu-item">I am menu item</p>\
+                <style> p.menu-item {\
+                    display:inline-block;\
+                    heith: 2em;\
+                    background-color: #beb\
+                }<style>';
+                ev.target.appendChild(bmm.menu);
+                bmm.menu.parentNode = ev.target;
+                return false; // disable default contest menu
+            }, false);
             // $('dbg1').addEventListener('click', function(e){
             // console.log(e.clientX, e.clientY);
             // });
