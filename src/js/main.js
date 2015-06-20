@@ -83,14 +83,16 @@
         if (bmNode.title) {
             if (bmNode.url) {
                 anchor = document.createElement('a');
-                anchor.setAttribute('id', bmNode.id);
+                anchor.setAttribute('class', 'bookmark');
+                anchor.setAttribute('bmid', bmNode.id);
                 anchor.setAttribute('href', bmNode.url);
                 anchor.setAttribute('target', '_blank');
                 anchor.innerHTML = '[' + depth + '/' + bmNode.id + '/' + bmNode.index + ']' + bmNode.title;
                 span.appendChild(anchor);
             } else {
                 folder = document.createElement('span');
-                folder.setAttribute('id', bmNode.id);
+                folder.setAttribute('class', 'bookmark');
+                folder.setAttribute('bmid', bmNode.id);
                 folder.innerHTML = '[' + depth + '/' + bmNode.id + '/' + bmNode.index + '/' + bmNode.title + ']';
                 span.appendChild(folder);
             }
@@ -98,18 +100,51 @@
         return span;
     };
 
+    var handleDebugKey = function(){ // DEBUG
+        // test speed
+        var getBookmarksFromCollection = function( collection, id){
+            var coll = [];
+            for ( var i = 0, len = collection.length; i< len; i++){
+                if (collection[i].getAttribute('bmid') === id){
+                    coll.push(collection[i]);
+                }
+            }
+            return coll;
+        }
+        var dbgId = "1716";
+        var start1 = new Date().getTime();
+        var collect1 = document.getElementsByClassName('bookmark');
+        // console.log(collect1);
+        collect1 = getBookmarksFromCollection( collect1, dbgId );
+        var end1 = new Date().getTime();
+        var time1 = end1 - start1 ;
+        console.log(collect1, start1, end1, time1);
+
+        var start2 = new Date().getTime();
+        var collect2 = document.querySelectorAll('.bookmark');
+        // console.log(collect2);
+        collect2 = getBookmarksFromCollection( collect2, dbgId );
+        var end2 = new Date().getTime();
+        var time2 = end2 - start2 ;
+        console.log(collect2, start2, end2, time2);
+    }
+
     handleKeyDown = function(e ) {
         if (e.ctrlKey && e.keyIdentifier == 'U+0032') { // Ctrl-2
             toggleSub();
+        }
+        // DEBUG
+        if (e.ctrlKey && e.keyIdentifier == 'U+0030') { // Ctrl-0
+            handleDebugKey();
         }
     };
 
     var forest_ = [];
     forest_.createTree = function() {
-      var tree = new bmm.BookmarkTree();
+        var tree = new bmm.BookmarkTree();
 
-      this.append(tree);
-      return tree;
+        this.append(tree);
+        return tree;
     };
 
     document.onreadystatechange = function() {
@@ -123,14 +158,15 @@
             // $('toggle-sub').addEventListener('click', toggleSub);
             $('search-form').addEventListener('submit', searchFun);
             $('bm-tree1').addEventListener('click', (function(e) {
-                if (e.target.id) {
-                    listBookmarks('bm-list1', e.target.id);
+                if (e.target.getAttribute('bmid')) {
+                    listBookmarks('bm-list1', e.target.getAttribute('bmid'));
                 }
             }), true);
             // $('dbg1').addEventListener('click', function(e){
-                // console.log(e.clientX, e.clientY);
+            // console.log(e.clientX, e.clientY);
             // });
             loadBookmarkTree('bm-tree1');
+            loadBookmarkTree('bm-tree2');
 
             document.addEventListener('keydown', handleKeyDown);
 
