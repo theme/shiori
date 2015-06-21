@@ -174,6 +174,7 @@
                             // ensure recycle bin folder TODO
                             // chrome.bookmarks.move(id, dest, callback);
                             // bmm.menu.getParentBookmarkNode());
+                            var recycleBinName = 'shiori recycle bin';
                             break;
                         case "cmd-rename": // move to recycle bin
                             break;
@@ -191,29 +192,29 @@
                     || !bmNode.className.match(/(?:^|\s)bookmark(?!\S)/)) ){
                         bmNode = bmNode.parentNode; // search up for bookmarkNode
                     }
-                if (bmNode === null){return false;}
-                if ( typeof bmm.menu === "undefined"){
-                    bmm.menu = document.createElement('div');
-                    bmm.menu.setAttribute('class', 'context-menu');
-                } else {
-                    if ( bmNode === bmm.menu ) { return false; }
-                    if ( bmNode === bmm.menu.parentNode ) { return false; }
-                    bmm.menu.parentNode.removeChild(bmm.menu);
-                }
-                var rect = bmNode.getBoundingClientRect();
-                bmm.menu.innerHTML =
-                    '<p id="cmd-recycle" class="menu-item cmd">Recycle</p>\
-                <p id="cmd-rename" class="menu-item cmd">Rename</p>\
-                <p id="cmd-copy" class="menu-item cmd">Copy</p>\
-                <style> p.menu-item {\
-                display:inline-block;\
-                margin: 0 1em;\
-                heith: 2em;\
-                background-color: #beb\
-                }<style>';
-                bmNode.appendChild(bmm.menu);
-                bmm.menu.parentNode = bmNode;
-                return false; // disable default contest menu
+                    if (bmNode === null){return false;}
+                    if ( typeof bmm.menu === "undefined"){
+                        bmm.menu = document.createElement('div');
+                        bmm.menu.setAttribute('class', 'context-menu');
+                    } else {
+                        if ( bmNode === bmm.menu ) { return false; }
+                        if ( bmNode === bmm.menu.parentNode ) { return false; }
+                        bmm.menu.parentNode.removeChild(bmm.menu);
+                    }
+                    var rect = bmNode.getBoundingClientRect();
+                    bmm.menu.innerHTML =
+                        '<p id="cmd-recycle" class="menu-item cmd">Recycle</p>\
+                    <p id="cmd-rename" class="menu-item cmd">Rename</p>\
+                    <p id="cmd-copy" class="menu-item cmd">Copy</p>\
+                    <style> p.menu-item {\
+                    display:inline-block;\
+                    margin: 0 1em;\
+                    heith: 2em;\
+                    background-color: #beb\
+                    }<style>';
+                    bmNode.appendChild(bmm.menu);
+                    bmm.menu.parentNode = bmNode;
+                    return false; // disable default contest menu
             }, false);
             // $('dbg1').addEventListener('click', function(e){
             // console.log(e.clientX, e.clientY);
