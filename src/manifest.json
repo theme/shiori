@@ -23,6 +23,7 @@
     /* "bookmarks": "src/override/bookmarks.html" */
   },
   "permissions": [
+    "storage",
     "bookmarks",
     "chrome://favicon/",
     "contextMenus",
