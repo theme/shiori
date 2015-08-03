@@ -1,5 +1,6 @@
 *~
 *.swp
+*.swo
 tags
 
 
@@ -7,3 +8,4 @@ node_modules/
 pub/
 *.png
 *.jpg
+*.log
