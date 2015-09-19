@@ -31,7 +31,7 @@ this.ki = ( function(){
     }
 
     /**
-     * Add fields of fun returned object to name.
+     * fun returns an obj, all fields of obj will be add to name.
      * @param {!string} name a path string like 'foo.bar'.
      */
     function define( name, fun ){

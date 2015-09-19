@@ -84,16 +84,22 @@
             if (bmNode.url) {
                 anchor = document.createElement('a');
                 anchor.setAttribute('class', 'bookmark');
-                anchor.setAttribute('bmid', bmNode.id);
                 anchor.setAttribute('href', bmNode.url);
                 anchor.setAttribute('target', '_blank');
-                anchor.innerHTML = '[' + depth + '/' + bmNode.id + '/' + bmNode.index + ']' + bmNode.title;
+                anchor.setAttribute('bmid', bmNode.id);
+                anchor.setAttribute('depth', depth);
+                anchor.setAttribute('id', bmNode.id);
+                anchor.setAttribute('index', bmNode.index);
+                anchor.innerHTML = bmNode.title;
                 span.appendChild(anchor);
             } else {
                 folder = document.createElement('span');
                 folder.setAttribute('class', 'bookmark');
                 folder.setAttribute('bmid', bmNode.id);
-                folder.innerHTML = '[' + depth + '/' + bmNode.id + '/' + bmNode.index + '/' + bmNode.title + ']';
+                folder.setAttribute('depth', depth);
+                folder.setAttribute('id', bmNode.id);
+                folder.setAttribute('index', bmNode.index);
+                folder.innerHTML = '[' + bmNode.title + ']';
                 span.appendChild(folder);
             }
         }
@@ -137,14 +143,6 @@
         if (e.ctrlKey && e.keyIdentifier == 'U+0030') { // Ctrl-0
             handleDebugKey();
         }
-    };
-
-    var forest_ = [];
-    forest_.createTree = function() {
-        var tree = new bmm.BookmarkTree();
-
-        this.append(tree);
-        return tree;
     };
 
     document.onreadystatechange = function() {
