@@ -6,6 +6,10 @@
 
     var initTree;
 
+    var handleDragOver = function(e){
+        e.preventDefault();
+    }
+
     toggleSub = function() {
         var x = document.querySelectorAll('#main');
         for (var i = 0; i < x.length; i++) {
@@ -83,7 +87,8 @@
         if (bmNode.title) {
             if (bmNode.url) {
                 anchor = document.createElement('a');
-                anchor.setAttribute('class', 'bookmark');
+                anchor.setAttribute('class', 'link');
+                anchor.setAttribute('draggable', 'true');
                 anchor.setAttribute('href', bmNode.url);
                 anchor.setAttribute('target', '_blank');
                 anchor.setAttribute('bmid', bmNode.id);
@@ -94,7 +99,8 @@
                 span.appendChild(anchor);
             } else {
                 folder = document.createElement('span');
-                folder.setAttribute('class', 'bookmark');
+                folder.setAttribute('class', 'folder');
+                folder.setAttribute('draggable', 'true');
                 folder.setAttribute('bmid', bmNode.id);
                 folder.setAttribute('depth', depth);
                 folder.setAttribute('id', bmNode.id);
@@ -221,6 +227,7 @@
             loadBookmarkTree('bm-tree2');
 
             document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('dragover', handleDragOver);
 
             // listen for bookmark change
             chrome.bookmarks.onCreated.addListener(function(id, bookmark){
@@ -248,3 +255,4 @@
     };
 
 }).call(this);
+
