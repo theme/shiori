@@ -5,10 +5,47 @@
     var handleKeyDown;
 
     var initTree;
+    var mvbm;
+    var history = [];
 
     var handleDragOver = function(e){
         e.preventDefault();
     }
+
+    var handleDragStart = function(e){
+        e.dataTransfer.setData("id", e.target.id);
+    }
+
+    var handleDrop = function(e){
+        console.log('drop');
+        var id = e.dataTransfer.getData("id");
+        var toid = e.target.id;
+        mvbm(id, toid);
+        e.preventDefault();
+    }
+
+    /* move bookmark */
+    mvbm = function(id, toid){
+        console.log( id + "--->" + toid);
+
+        var move = new Promise(function(resolve, reject){
+            var cb = function(node){
+                if (node)
+                    resolve(node);
+                else
+                    reject(new Error("move bm node error"));
+            };
+            chrome.bookmarks.move(id, {"parentId": toid}, cb);
+        }).then(function(bmNode){
+            console.log(bmNode);
+            history.push( {
+                "type": "move",
+                "id": id,
+                "toid": toid
+            });
+            console.log(history);
+        });
+    };
 
     toggleSub = function() {
         var x = document.querySelectorAll('#main');
@@ -228,6 +265,8 @@
 
             document.addEventListener('keydown', handleKeyDown);
             document.addEventListener('dragover', handleDragOver);
+            document.addEventListener('dragstart', handleDragStart);
+            document.addEventListener('drop', handleDrop);
 
             // listen for bookmark change
             chrome.bookmarks.onCreated.addListener(function(id, bookmark){
