@@ -8,6 +8,10 @@
     var mvbm;
     var history = [];
 
+    var log = function(msg){
+        console.log(msg);   // TODO; debug
+    };
+
     var handleDragOver = function(e){
         e.preventDefault();
     }
@@ -17,16 +21,18 @@
     }
 
     var handleDrop = function(e){
-        console.log('drop');
+        log('drop');
         var id = e.dataTransfer.getData("id");
         var toid = e.target.id;
-        mvbm(id, toid);
-        e.preventDefault();
+        if (id !== "" && toid !== "" && id !== toid) {
+            mvbm(id, toid);
+            e.preventDefault();
+        }
     }
 
     /* move bookmark */
     mvbm = function(id, toid){
-        console.log( id + "--->" + toid);
+        log( id + "--->" + toid);
 
         var move = new Promise(function(resolve, reject){
             var cb = function(node){
@@ -37,13 +43,13 @@
             };
             chrome.bookmarks.move(id, {"parentId": toid}, cb);
         }).then(function(bmNode){
-            console.log(bmNode);
+            log(bmNode);
             history.push( {
                 "type": "move",
                 "id": id,
                 "toid": toid
             });
-            console.log(history);
+            log(history);
         });
     };
 
@@ -163,19 +169,19 @@
         var dbgId = "1716";
         var start1 = new Date().getTime();
         var collect1 = document.getElementsByClassName('bookmark');
-        // console.log(collect1);
+        // log(collect1);
         collect1 = getBookmarksFromCollection( collect1, dbgId );
         var end1 = new Date().getTime();
         var time1 = end1 - start1 ;
-        console.log(collect1, start1, end1, time1);
+        log(collect1, start1, end1, time1);
 
         var start2 = new Date().getTime();
         var collect2 = document.querySelectorAll('.bookmark');
-        // console.log(collect2);
+        // log(collect2);
         collect2 = getBookmarksFromCollection( collect2, dbgId );
         var end2 = new Date().getTime();
         var time2 = end2 - start2 ;
-        console.log(collect2, start2, end2, time2);
+        log(collect2, start2, end2, time2);
     }
 
     handleKeyDown = function(e ) {
@@ -204,12 +210,12 @@
                 }
             }), true);
             $('bm-tree2').addEventListener('click', (function(e) {
-                console.log('click', e.target);
+                log('click', e.target);
                 if (e.target.getAttribute('bmid')) {
                     listBookmarks('bm-list2', e.target.getAttribute('bmid'));
                 }
                 if (/\s*cmd\s*/.test(e.target.className)){
-                    console.log('click a cmd!!', e.target.id);
+                    log('click a cmd!!', e.target.id);
                     switch( e.target.id ){
                         case "cmd-recycle": // move to recycle bin
                             // ensure recycle bin folder TODO
@@ -258,7 +264,7 @@
                     return false; // disable default contest menu
             }, false);
             // $('dbg1').addEventListener('click', function(e){
-            // console.log(e.clientX, e.clientY);
+            // log(e.clientX, e.clientY);
             // });
             loadBookmarkTree('bm-tree1');
             loadBookmarkTree('bm-tree2');
@@ -270,25 +276,25 @@
 
             // listen for bookmark change
             chrome.bookmarks.onCreated.addListener(function(id, bookmark){
-                console.log('cb created'+ id + bookmark.id + bookmark.title + bookmark.url );
+                log('cb created'+ id + bookmark.id + bookmark.title + bookmark.url );
             });
             chrome.bookmarks.onRemoved.addListener(function(id, removeInfo){
-                console.log('cb removed'+ id , removeInfo);
+                log('cb removed'+ id , removeInfo);
             });
             chrome.bookmarks.onChanged.addListener(function(id, changeInfo){
-                console.log('cb changed'+ id , changeInfo);
+                log('cb changed'+ id , changeInfo);
             });
             chrome.bookmarks.onMoved.addListener(function(id, moveInfo){
-                console.log('cb moved'+ id , moveInfo);
+                log('cb moved'+ id , moveInfo);
             });
             chrome.bookmarks.onChildrenReordered.addListener(function(id, reorderInfo){
-                console.log('cb onChildrenReordered'+ id , reorderInfo);
+                log('cb onChildrenReordered'+ id , reorderInfo);
             });
             chrome.bookmarks.onImportBegan.addListener(function(){
-                console.log('cb onImportBegan');
+                log('cb onImportBegan');
             });
             chrome.bookmarks.onImportEnded.addListener(function(){
-                console.log('cb onImportEnded');
+                log('cb onImportEnded');
             });
         }
     };
