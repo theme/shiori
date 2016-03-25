@@ -1,11 +1,20 @@
-*~
-*.swp
-*.swo
-tags
-
-
 node_modules/
+doc/
 pub/
-*.png
-*.jpg
-*.log
+
+# generated binary image
+**.png
+**.jpg
+
+# generated 3D models
+**.json
+**.blend1
+
+# editor temporary files
+**.swp
+**.swo
+**~
+
+# symbol table files
+**tags
+**.log
