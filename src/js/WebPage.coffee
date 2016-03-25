@@ -1,5 +1,4 @@
 define ['Line'], (Line) ->
-    msInYear = 1000 * 3600 * 24 * 365
     class WebPage extends THREE.Object3D
         constructor: (url, atime = Date.now())->
             super
@@ -14,7 +13,5 @@ define ['Line'], (Line) ->
             # loader = new THREE.JSONLoader
             # loader.load "/models/WebPageMark.json", (geo,mats) =>
             #     @.add new THREE.Mesh(geo,mats[0])
-
-            @translateX @atime/msInYear
 
     return WebPage

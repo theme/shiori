@@ -19,6 +19,9 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
     cch = -> canvas.clientHeight
     cas = -> ccw() / cch()
 
+    # constant
+    msInYear = 1000 * 3600 * 24 * 365
+
     # camera
     initCamera = ->
         # Perspective
@@ -27,7 +30,8 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             @aspect = ccw()/cch()
             @updateProjectionMatrix()
         pCam.tgt = new THREE.Vector3
-        pCam.position.set 0,5,20
+        pCam.zoomTo = (min,max)-> return
+        pCam.position.set 0,0,20
 
         # Orthographic
         r = 4
@@ -36,13 +40,26 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         )
         oCam.r = r
         oCam.update = ->
-            @left   = - ccw()/r
-            @right  = + ccw()/r
-            @top    = + cch()/r
-            @bottom = - cch()/r
+            @left   = - ccw()/oCam.r
+            @right  = + ccw()/oCam.r
+            @top    = + cch()/oCam.r
+            @bottom = - cch()/oCam.r
             @updateProjectionMatrix()
         oCam.tgt = new THREE.Vector3
-        oCam.position.set 0,5,20
+        oCam.zoomTo = (min,max)->
+            # calc zoom
+            z = (@right-@left)/(max-min)*@zoom
+            # set zoom
+            @zoom = z
+            log 'zoom',@zoom
+            # update matrix
+            @updateProjectionMatrix()
+            # set position
+            c = (min + max)/2
+            log 'oCam.position.x',c
+            @position.set c,0,20
+
+        oCam.position.set 0,0,20
 
         camera = oCam
         return
@@ -77,7 +94,6 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         renderer.setViewport(0,0,canvas.clientWidth, canvas.clientHeight)
         camera.update()
 
-
     init = ->
         # canvas
         canvas = document.getElementById("3jscanvas")
@@ -101,7 +117,9 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
 
         # zoom
         canvas.addEventListener 'zoom', (e) ->
-            camera.zoom -= e.detail if camera.zoom-e.detail>0.1
+            speed = 0.1
+            z = camera.zoom-e.detail*speed*camera.zoom
+            camera.zoom = z if z > 0
             camera.updateProjectionMatrix()
             return
 
@@ -159,7 +177,22 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
     watchHistory = (scene) ->
         chrome.history.onVisited.addListener (hi)->
             p = new WebPage(hi.url, hi.lastVisitTime)
+            log 'history onVisited',p.id,p.url
             scene.add(p)
+
+    showAllHistory = (scene, camera) ->
+        chrome.history.search {text:'',maxResults:1000},(a)->
+            log a.length,'history record(s)'
+            min = a[0]?.lastVisitTime
+            max = min
+            for hi in a
+                do (hi) ->
+                    if hi.lastVisitTime < min then min = hi.lastVisitTime
+                    else if max < hi.lastVisitTime then max = hi.lastVisitTime
+                    p = new WebPage(hi.url, hi.lastVisitTime)
+                    p.translateX p.atime/msInYear
+                    scene.add(p)
+            camera.zoomTo min/msInYear,max/msInYear
 
     # load scene & start render
     loader = new THREE.ObjectLoader
@@ -182,13 +215,14 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
                 scene.add( cube )
 
         scene.add( new Compass )
-        # scene.add( new WebPage("wikipedia.org") )
-        watchHistory(scene)
 
         #TODO calculate WebPage position
 
         init()
-        # scene.add(camera)
+        watchHistory scene
+        showAllHistory scene,camera
+
         animate()
     , (xhr) -> console.log xhr.loaded/xhr.total*100+'% loaded'
     )
+
