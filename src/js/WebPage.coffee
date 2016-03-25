@@ -6,8 +6,8 @@ define ['Line'], (Line) ->
             @atime = atime
             
             # cross mark
-            @.add new Line -1,0,0,1,0,0,'yellow'
-            @.add new Line 0,-1,0,0,1,0,'yellow'
+            @.add new Line -0.1,0,0,0.1,0,0,'yellow'
+            @.add new Line 0,-0.1,0,0,0.1,0,'yellow'
 
             # Blender JSON Model
             # loader = new THREE.JSONLoader
