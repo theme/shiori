@@ -155,6 +155,12 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             for c in mixerActions
                 do (c) -> c.stop()
 
+    # watch chrome history
+    watchHistory = (scene) ->
+        chrome.history.onVisited.addListener (hi)->
+            p = new WebPage(hi.url, hi.lastVisitTime)
+            scene.add(p)
+
     # load scene & start render
     loader = new THREE.ObjectLoader
     loader.load("/models/untitled.json", (loadedScene) ->
@@ -176,7 +182,8 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
                 scene.add( cube )
 
         scene.add( new Compass )
-        scene.add( new WebPage("wikipedia.org") )
+        # scene.add( new WebPage("wikipedia.org") )
+        watchHistory(scene)
 
         #TODO calculate WebPage position
 
