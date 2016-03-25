@@ -122,6 +122,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             camera.zoom = z if z > 0
             camera.updateProjectionMatrix()
             log 'zoom',camera.zoom
+            render()
             return
 
         # rotate
@@ -133,6 +134,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             )
             camera.position.copy v.add camera.tgt
             camera.lookAt camera.tgt
+            render()
             return
 
         # pan
@@ -151,11 +153,13 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             camera.position.add camUp.multiplyScalar(
                 e.detail.deltaY / camera.zoom * speed)
             camera.tgt.copy v.add camera.position
+            render()
             return
 
         # change camera
         canvas.addEventListener 'cam', (e) ->
             switchCam e.detail
+            render()
             return
 
     animate = ->
@@ -195,6 +199,8 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
                     p.translateX p.atime/msInYear
                     scene.add p
             camera.zoomTo min/msInYear,max/msInYear
+            render()
+            return
         # show bookmarks
         bmCount = 0
         chrome.bookmarks.getTree (bmlist)->
@@ -216,6 +222,8 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             traverseTree bmlist,addBmNode
             log bmCount,'bookmarks'
             camera.zoomTo min/msInYear,max/msInYear
+            render()
+            return
         return
 
     # load scene & start render
@@ -246,7 +254,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         watchHistory scene
         showAllHistory scene,camera
 
-        animate()
+        # animate()
     , (xhr) -> console.log xhr.loaded/xhr.total*100+'% loaded'
     )
 
