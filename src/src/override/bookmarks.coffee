@@ -48,10 +48,10 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         oCam.tgt = new THREE.Vector3
         oCam.zoomTo = (min,max)->
             # calc zoom
-            z = (@right-@left)/(max-min)*@zoom
+            z = (@right-@left)/(max-min)
             # set zoom
             @zoom = z
-            log 'zoom',@zoom
+            log min,max,'zoom',@zoom
             # update matrix
             @updateProjectionMatrix()
             # set position
@@ -121,6 +121,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             z = camera.zoom-e.detail*speed*camera.zoom
             camera.zoom = z if z > 0
             camera.updateProjectionMatrix()
+            log 'zoom',camera.zoom
             return
 
         # rotate
@@ -181,18 +182,41 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             scene.add(p)
 
     showAllHistory = (scene, camera) ->
+        min = Date.now()
+        max = 0
+        # show history
         chrome.history.search {text:'',maxResults:1000},(a)->
             log a.length,'history record(s)'
-            min = a[0]?.lastVisitTime
-            max = min
             for hi in a
                 do (hi) ->
                     if hi.lastVisitTime < min then min = hi.lastVisitTime
-                    else if max < hi.lastVisitTime then max = hi.lastVisitTime
+                    if max < hi.lastVisitTime then max = hi.lastVisitTime
                     p = new WebPage(hi.url, hi.lastVisitTime)
                     p.translateX p.atime/msInYear
-                    scene.add(p)
+                    scene.add p
             camera.zoomTo min/msInYear,max/msInYear
+        # show bookmarks
+        bmCount = 0
+        chrome.bookmarks.getTree (bmlist)->
+            addBmNode = (n)->
+                if n.dateAdded < min then min = n.dateAdded
+                if max < n.dateAdded then max = n.dateAdded
+                bmCount += 1
+                p = new WebPage n.url,n.dateAdded
+                p.translateX p.atime/msInYear
+                scene.add p
+                return
+            traverseTree = (bmlist, callback)-> # define
+                for bm in bmlist
+                    do (bm)->
+                        if bm.url? then callback bm
+                        if bm.children?
+                            traverseTree bm.children, callback
+                return
+            traverseTree bmlist,addBmNode
+            log bmCount,'bookmarks'
+            camera.zoomTo min/msInYear,max/msInYear
+        return
 
     # load scene & start render
     loader = new THREE.ObjectLoader
