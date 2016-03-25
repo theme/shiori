@@ -248,11 +248,12 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
 
         scene.add( new Compass )
 
-        #TODO calculate WebPage position
 
         init()
         watchHistory scene
         showAllHistory scene,camera
+
+        #TODO toggle on/off bookmarks / history
 
         # animate()
     , (xhr) -> console.log xhr.loaded/xhr.total*100+'% loaded'
