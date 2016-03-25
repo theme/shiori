@@ -2,33 +2,18 @@ html(lang="en")
     head
         title Shiori
         meta(charset="utf-8")
-        link(href="/css/bookmarks.css", rel="stylesheet")
+        link(href="bookmarks.css", rel="stylesheet")
     body
         div#header
-            h2#app-name Shiori, a bookmark arranger
-            form#search-form
-                input#search-text(type="text",placeholder="Search Keyword", autofocus)
+            h2#app-name a Three.js test
+            form#url-form
+                input#showHideBtn(type="checkbox" checked)
+                span canvas
+                input#search-text(type="text",placeholder="URL", autofocus)
+
         div#main
-            div.panel.col#col1
-                div.panel-heading Folders
-                div.panel-body#bm-tree1
+            canvas#3jscanvas(draggable)
 
-            div.container.col#col2
-                div.panel#plist1
-                    div.panel-heading List
-                    div.panel-body#bm-list1
-                div.panel.sub#plist2
-                    div.panel-heading List 2
-                    div.panel-body#bm-list2
+        script(src="/js/lib/three.js")
+        script(src="/js/lib/require.js", data-main="bookmarks")
 
-            div.panel.sub.col#col3
-                div.panel-heading Folders 2
-                div.panel-body#bm-tree2
-
-        script(src="/js/util.js")
-        script(src="/js/ki.js")
-        script(src="/js/ki/ui.js")
-        script(src="/js/ki/ui/tree.js")
-        script(src="/js/ki/ui/list.js")
-        script(src="/js/bmm.js")
-        script(src="/js/main.js")

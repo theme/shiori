@@ -1,6 +1,6 @@
 {
   "name": "Shiori",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "manifest_version": 2,
   "description": "Bookmark arranger",
   "homepage_url": "http://github.com/theme/shiori",
@@ -11,7 +11,7 @@
   },
   "default_locale": "en",
    "background": {
-     "scripts": ["js/background.js"],
+     "scripts": ["src/background/background.js"],
      "persistent": false
    },
   "options_page": "src/options/options.html",
