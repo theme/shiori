@@ -16,7 +16,12 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
 
     # contents
     bookmarksObj = new THREE.Object3D
+    bookmarksObj.loaded = false
     historiesObj = new THREE.Object3D
+    historiesObj.loaded = false
+    # contents position.x min / max
+    cmin = Date.now()
+    cmax = 0
 
     # helper
     ccw = -> canvas.clientWidth
@@ -189,29 +194,32 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             log 'history onVisited',p.id,p.url
             historiesObj.add(p)
 
-    showAllHistory = (scene, camera) ->
-        min = Date.now()
-        max = 0
+    loadHistory = (scene, camera) ->
+        if historiesObj.loaded then return
         # show history
         chrome.history.search {text:'',maxResults:1000},(a)->
             log a.length,'history record(s)'
             for hi in a
                 do (hi) ->
-                    if hi.lastVisitTime < min then min = hi.lastVisitTime
-                    if max < hi.lastVisitTime then max = hi.lastVisitTime
+                    if hi.lastVisitTime < cmin then cmin = hi.lastVisitTime
+                    if cmax < hi.lastVisitTime then cmax = hi.lastVisitTime
                     p = new WebPage(hi.url, hi.lastVisitTime)
                     p.translateX p.atime/msInYear
                     historiesObj.add p
-            camera.zoomTo min/msInYear,max/msInYear
+            camera.zoomTo cmin/msInYear,cmax/msInYear
+            historiesObj.loaded = true
             scene.add historiesObj
             render()
             return
+
+    loadBookmarks = (scene, camera)->
+        if bookmarksObj.loaded then return
         # show bookmarks
         bmCount = 0
         chrome.bookmarks.getTree (bmlist)->
             addBmNode = (n)->
-                if n.dateAdded < min then min = n.dateAdded
-                if max < n.dateAdded then max = n.dateAdded
+                if n.dateAdded < cmin then cmin = n.dateAdded
+                if cmax < n.dateAdded then cmax = n.dateAdded
                 bmCount += 1
                 p = new WebPage n.url,n.dateAdded
                 p.translateX p.atime/msInYear
@@ -226,7 +234,8 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
                 return
             traverseTree bmlist,addBmNode
             log bmCount,'bookmarks'
-            camera.zoomTo min/msInYear,max/msInYear
+            camera.zoomTo cmin/msInYear,cmax/msInYear
+            bookmarksObj.loaded = true
             scene.add bookmarksObj
             render()
             return
@@ -238,10 +247,12 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
 
     watchToggles = () ->
         $('check-history').addEventListener 'change', (e)->
+            if not historiesObj.loaded then loadHistory scene,camera
             toggle3objVis historiesObj,e.target?.checked
             render()
             return
         $('check-bookmarks').addEventListener 'change', (e)->
+            if not bookmarksObj.loaded then loadBookmarks scene,camera
             toggle3objVis bookmarksObj,e.target?.checked
             render()
             return
@@ -271,11 +282,13 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
 
         init()
         watchHistory scene
-        showAllHistory scene,camera
+        loadHistory scene,camera
+        loadBookmarks scene,camera
 
         # toggle on/off bookmarks
         watchToggles()
 
+        render()
         # animate()
     , (xhr) -> console.log xhr.loaded/xhr.total*100+'% loaded'
     )
