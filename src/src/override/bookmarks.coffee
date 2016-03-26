@@ -16,6 +16,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
 
     # contents
     bookmarksObj = new THREE.Object3D
+    historiesObj = new THREE.Object3D
 
     # helper
     ccw = -> canvas.clientWidth
@@ -55,13 +56,12 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             z = (@right-@left)/(max-min)
             # set zoom
             @zoom = z
-            log min,max,'zoom',@zoom
             # update matrix
             @updateProjectionMatrix()
             # set position
             c = (min + max)/2
-            log 'oCam.position.x',c
             @position.set c,0,20
+            log min,max,'zoom',@zoom,'oCam.position.x',c
 
         oCam.position.set 0,0,20
 
@@ -125,7 +125,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             z = camera.zoom-e.detail*speed*camera.zoom
             camera.zoom = z if z > 0
             camera.updateProjectionMatrix()
-            log 'zoom',camera.zoom
+            # log 'zoom',camera.zoom
             render()
             return
 
@@ -187,7 +187,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         chrome.history.onVisited.addListener (hi)->
             p = new WebPage(hi.url, hi.lastVisitTime)
             log 'history onVisited',p.id,p.url
-            scene.add(p)
+            historiesObj.add(p)
 
     showAllHistory = (scene, camera) ->
         min = Date.now()
@@ -201,8 +201,9 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
                     if max < hi.lastVisitTime then max = hi.lastVisitTime
                     p = new WebPage(hi.url, hi.lastVisitTime)
                     p.translateX p.atime/msInYear
-                    scene.add p
+                    historiesObj.add p
             camera.zoomTo min/msInYear,max/msInYear
+            scene.add historiesObj
             render()
             return
         # show bookmarks
@@ -231,14 +232,19 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             return
         return
 
+    toggle3objVis = (o, isVis)-> o.traverse (n)->
+        if isVis then n.visible = isVis else n.visible = false
+        return
+
     watchToggles = () ->
-        $('check-bookmarks').addEventListener 'change', (e)->
-            if !e.target?.checked then bookmarksObj.traverse (o) ->
-                o.visible = false
-            else bookmarksObj.traverse (o) -> o.visible = true
+        $('check-history').addEventListener 'change', (e)->
+            toggle3objVis historiesObj,e.target?.checked
             render()
             return
-        return
+        $('check-bookmarks').addEventListener 'change', (e)->
+            toggle3objVis bookmarksObj,e.target?.checked
+            render()
+            return
 
     # load scene & start render
     loader = new THREE.ObjectLoader
