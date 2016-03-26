@@ -14,10 +14,14 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
     mixer = null    # animation player
     mixerActions = []   # animation actions list
 
+    # contents
+    bookmarksObj = new THREE.Object3D
+
     # helper
     ccw = -> canvas.clientWidth
     cch = -> canvas.clientHeight
     cas = -> ccw() / cch()
+    $ = (id) -> return document.getElementById id
 
     # constant
     msInYear = 1000 * 3600 * 24 * 365
@@ -210,7 +214,7 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
                 bmCount += 1
                 p = new WebPage n.url,n.dateAdded
                 p.translateX p.atime/msInYear
-                scene.add p
+                bookmarksObj.add p
                 return
             traverseTree = (bmlist, callback)-> # define
                 for bm in bmlist
@@ -222,6 +226,16 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             traverseTree bmlist,addBmNode
             log bmCount,'bookmarks'
             camera.zoomTo min/msInYear,max/msInYear
+            scene.add bookmarksObj
+            render()
+            return
+        return
+
+    watchToggles = () ->
+        $('check-bookmarks').addEventListener 'change', (e)->
+            if !e.target?.checked then bookmarksObj.traverse (o) ->
+                o.visible = false
+            else bookmarksObj.traverse (o) -> o.visible = true
             render()
             return
         return
@@ -253,7 +267,8 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         watchHistory scene
         showAllHistory scene,camera
 
-        #TODO toggle on/off bookmarks / history
+        # toggle on/off bookmarks
+        watchToggles()
 
         # animate()
     , (xhr) -> console.log xhr.loaded/xhr.total*100+'% loaded'
