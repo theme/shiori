@@ -1,6 +1,6 @@
-define ['Line'], (Line) ->
+define ['Line','Label'], (Line, Label) ->
     class WebPage extends THREE.Object3D
-        constructor: (url, atime = Date.now())->
+        constructor: (url, title, atime = Date.now())->
             super
             @url = url
             @atime = atime
@@ -8,6 +8,7 @@ define ['Line'], (Line) ->
             # cross mark
             @.add new Line -0.1,0,0,0.1,0,0,'yellow'
             @.add new Line 0,-0.1,0,0,0.1,0,'yellow'
+            @.add new Label (if title? then title else url)
 
             # Blender JSON Model
             # loader = new THREE.JSONLoader

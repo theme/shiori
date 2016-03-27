@@ -1,5 +1,5 @@
 requirejs.config { baseUrl: '/js' }
-require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputMixer) ->
+require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage, Label, InputMixer) ->
     canvas = null
     scene = null
 
@@ -15,10 +15,10 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
     mixerActions = []   # animation actions list
 
     # contents
-    bookmarksObj = new THREE.Object3D
-    bookmarksObj.loaded = false
-    historiesObj = new THREE.Object3D
-    historiesObj.loaded = false
+    bookmarksGroup = new THREE.Object3D
+    bookmarksGroup.loaded = false
+    historyGroup = new THREE.Object3D
+    historyGroup.loaded = false
     # contents position.x min / max
     cmin = Date.now()
     cmax = 0
@@ -177,8 +177,10 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
         
     render = ->
         delta = clock.getDelta()
-        renderer.render(scene, camera)
-        scene.traverse (obj) -> obj.update?()
+        # do rendering before update, if animating
+        # renderer.render(scene, camera)
+        
+        scene.traverse (obj) -> obj.update?(camera, renderer)
 
         mixer.update delta # animation
 
@@ -187,15 +189,21 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             for c in mixerActions
                 do (c) -> c.stop()
 
+        # do rendering after update, if not animating
+        renderer.render(scene, camera)
+        return
+
     # watch chrome history
     watchHistory = (scene) ->
         chrome.history.onVisited.addListener (hi)->
-            p = new WebPage(hi.url, hi.lastVisitTime)
+            p = new WebPage(hi.url,hi.title, hi.lastVisitTime)
+            p.translateX p.atime/msInYear
             log 'history onVisited',p.id,p.url
-            historiesObj.add(p)
+            historyGroup.add(p)
+            render()
 
     loadHistory = (scene, camera) ->
-        if historiesObj.loaded then return
+        if historyGroup.loaded then return
         # show history
         chrome.history.search {text:'',maxResults:1000},(a)->
             log a.length,'history record(s)'
@@ -203,17 +211,17 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
                 do (hi) ->
                     if hi.lastVisitTime < cmin then cmin = hi.lastVisitTime
                     if cmax < hi.lastVisitTime then cmax = hi.lastVisitTime
-                    p = new WebPage(hi.url, hi.lastVisitTime)
+                    p = new WebPage(hi.url,hi.title, hi.lastVisitTime)
                     p.translateX p.atime/msInYear
-                    historiesObj.add p
+                    historyGroup.add p
             camera.zoomTo cmin/msInYear,cmax/msInYear
-            historiesObj.loaded = true
-            scene.add historiesObj
+            historyGroup.loaded = true
+            scene.add historyGroup
             render()
             return
 
     loadBookmarks = (scene, camera)->
-        if bookmarksObj.loaded then return
+        if bookmarksGroup.loaded then return
         # show bookmarks
         bmCount = 0
         chrome.bookmarks.getTree (bmlist)->
@@ -221,9 +229,9 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
                 if n.dateAdded < cmin then cmin = n.dateAdded
                 if cmax < n.dateAdded then cmax = n.dateAdded
                 bmCount += 1
-                p = new WebPage n.url,n.dateAdded
+                p = new WebPage n.url,n.title,n.dateAdded
                 p.translateX p.atime/msInYear
-                bookmarksObj.add p
+                bookmarksGroup.add p
                 return
             traverseTree = (bmlist, callback)-> # define
                 for bm in bmlist
@@ -235,25 +243,24 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
             traverseTree bmlist,addBmNode
             log bmCount,'bookmarks'
             camera.zoomTo cmin/msInYear,cmax/msInYear
-            bookmarksObj.loaded = true
-            scene.add bookmarksObj
+            bookmarksGroup.loaded = true
+            scene.add bookmarksGroup
             render()
             return
         return
 
-    toggle3objVis = (o, isVis)-> o.traverse (n)->
-        if isVis then n.visible = isVis else n.visible = false
-        return
+    set3objVis = (o, isVis = true)-> o.traverse (n)->
+        n.visible = isVis
 
     watchToggles = () ->
         $('check-history').addEventListener 'change', (e)->
-            if not historiesObj.loaded then loadHistory scene,camera
-            toggle3objVis historiesObj,e.target?.checked
+            loadHistory scene,camera if not historyGroup.loaded
+            set3objVis historyGroup,e.target?.checked
             render()
             return
         $('check-bookmarks').addEventListener 'change', (e)->
-            if not bookmarksObj.loaded then loadBookmarks scene,camera
-            toggle3objVis bookmarksObj,e.target?.checked
+            loadBookmarks scene,camera if not bookmarksGroup.loaded
+            set3objVis bookmarksGroup,e.target?.checked
             render()
             return
 
@@ -279,11 +286,10 @@ require ['log','Compass','WebPage','InputMixer'], (log, Compass, WebPage, InputM
 
         scene.add( new Compass )
 
-
         init()
         watchHistory scene
-        loadHistory scene,camera
-        loadBookmarks scene,camera
+        # loadHistory scene,camera
+        # loadBookmarks scene,camera
 
         # toggle on/off bookmarks
         watchToggles()
