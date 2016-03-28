@@ -8,7 +8,11 @@ define ['Line','Label'], (Line, Label) ->
             # cross mark
             @.add new Line -0.1,0,0,0.1,0,0,'yellow'
             @.add new Line 0,-0.1,0,0,0.1,0,'yellow'
-            @.add new Label (if title? then title else url)
+            if title?
+                @.add new Label title
+            else
+            matches = url.match(/^https?\:\/\/(?:www\.)?([^\/?#]+)(?:[\/?#]|$)/i)
+            @.add new Label(if matches? then matches[1] else title)
 
             # Blender JSON Model
             # loader = new THREE.JSONLoader
