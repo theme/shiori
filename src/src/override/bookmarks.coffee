@@ -1,4 +1,6 @@
-requirejs.config { baseUrl: '/js' }
+requirejs.config {
+    baseUrl: '/js'
+}
 require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage, Label, InputMixer) ->
     canvas = null
     scene = null
@@ -19,6 +21,22 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
     bookmarksGroup.loaded = false
     historyGroup = new THREE.Object3D
     historyGroup.loaded = false
+    # HUD on canvas
+    hud = null
+    class HUD
+        constructor: () ->
+            @logZoom = 0.8
+
+    initHUD = (camera, render) ->
+        hud = new HUD()
+        gui = new dat.GUI()
+        z = gui.add(hud, 'logZoom', 1, 15).listen()
+        z.onFinishChange (value) ->
+            camera.zoom = Math.exp(value)
+            render()
+            return
+        return gui
+
     # contents position.x min / max
     cmin = Date.now()
     cmax = 0
@@ -44,34 +62,27 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
         pCam.position.set 0,0,20
 
         # Orthographic
-        r = 4
+        r = 100/cch()
         oCam = new THREE.OrthographicCamera(
-            ccw()/-r, ccw()/+r, cch()/+r, cch()/-r, -1000, 1000
+            -r*ccw(), r*ccw(), r*cch(), -r*cch(), cch()/-2, cch()/2
         )
         oCam.r = r
         oCam.update = ->
-            @left   = - ccw()/oCam.r
-            @right  = + ccw()/oCam.r
-            @top    = + cch()/oCam.r
-            @bottom = - cch()/oCam.r
+            @left   = - ccw()*oCam.r
+            @right  = + ccw()*oCam.r
+            @top    = + cch()*oCam.r
+            @bottom = - cch()*oCam.r
             @updateProjectionMatrix()
         oCam.tgt = new THREE.Vector3
         oCam.zoomTo = (min,max)->
-            # calc zoom
-            z = (@right-@left)/(max-min)
-            # set zoom
-            @zoom = z
-            # update matrix
-            @updateProjectionMatrix()
-            # set position
-            c = (min + max)/2
-            @position.set c,0,20
-            log min,max,'zoom',@zoom,'oCam.position.x',c
+            @zoom = (@right-@left)/(max-min) # calc zoom
+            @updateProjectionMatrix() # update matrix
+            @position.set ((min + max)/2),0,20
+            log min,max,'zoom:',@zoom,'oCam.position.x',@position.x
 
         oCam.position.set 0,0,20
 
-        camera = oCam
-        return
+        return camera = oCam
 
     switchCam = (type) ->
         a2b = (a,b) -> camera = b
@@ -101,7 +112,8 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
         canvas.width = canvas.clientWidth
         canvas.height = canvas.clientHeight
         renderer.setViewport(0,0,canvas.clientWidth, canvas.clientHeight)
-        camera.update()
+        render()
+        # camera.update()
 
     init = ->
         # canvas
@@ -110,12 +122,17 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
         # renderer
         renderer = new THREE.WebGLRenderer {canvas:canvas}
         renderer.setClearColor new THREE.Color 0x003366
+        log 'renderer.precision:',renderer.getPrecision()
+
 
         # camera
         initCamera()
 
         # reset view
         resetCameraView()
+
+        # gui
+        $('HUD').appendChild initHUD(camera, render).domElement
 
         # Watch vanvas resize
         watchResize canvas, resetCameraView
@@ -126,11 +143,13 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
 
         # zoom
         canvas.addEventListener 'zoom', (e) ->
+            log e.detail
             speed = 0.1
             z = camera.zoom-e.detail*speed*camera.zoom
             camera.zoom = z if z > 0
             camera.updateProjectionMatrix()
             # log 'zoom',camera.zoom
+            hud.logZoom = Math.log camera.zoom
             render()
             return
 
@@ -148,6 +167,7 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
 
         # pan
         canvas.addEventListener 'pan', (e) ->
+            log e.detail #TODO: error will raise. move from input to here, and re-organise ratio
             speed = 4
             camUp = new THREE.Vector3 0,1,0
             camRight = new THREE.Vector3 1,0,0
@@ -180,6 +200,7 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
         # do rendering before update, if animating
         # renderer.render(scene, camera)
         
+        camera.update()
         scene.traverse (obj) -> obj.update?(camera, renderer)
 
         mixer.update delta # animation
@@ -215,6 +236,7 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
                     p.translateX p.atime/msInYear
                     historyGroup.add p
             camera.zoomTo cmin/msInYear,cmax/msInYear
+            hud.logZoom = Math.log camera.zoom
             historyGroup.loaded = true
             scene.add historyGroup
             render()
@@ -243,6 +265,7 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
             traverseTree bmlist,addBmNode
             log bmCount,'bookmarks'
             camera.zoomTo cmin/msInYear,cmax/msInYear
+            hud.logZoom = Math.log camera.zoom
             bookmarksGroup.loaded = true
             scene.add bookmarksGroup
             render()
@@ -287,6 +310,7 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
         scene.add( new Compass )
 
         init()
+
         watchHistory scene
         # loadHistory scene,camera
         # loadBookmarks scene,camera

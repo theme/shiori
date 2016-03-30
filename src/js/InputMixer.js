@@ -1,13 +1,58 @@
 // navigation input events
 // on a DOM element (that has: wheel, mousedown, mousemove)
+//
+// # TODO: Normalise input amount to [-1,1]
+// # to reduce zoom amount, I have to make wheel and touchpad scale nearly same amount
+// #
+// # wheel input is very large, check it from log:
+// # +,- 636~ 5888 for every tick
+// #
+// # while touchpad relativly small:
+// # +,- 1 ~ 332 (depends on speed)
+// #
+// # ?? can I get device resolution ?
+// # WEb API seems not giving the device's one tick amount.
+// 
+// # then we have to adapt according to the input.
+// # HOPE: scroll gives in equal max of moving.
+// # Normalise mouse wheel and touch pad into [-1,1]
+// # then the actual effective max zoom speed (a setting) can be set in other part of the application ( as long as input is always in 0 ~ 1)
+//
+// # The normalisation can be done in the InputMixer module.
+//
+// # Algorithm: each input has a related variable recording the max amount ever seen.
+// # then every input is divided by this max value, getting an output in range [0, 1]
+// #
+// #   Does this has to be a class?
+// #       in: data is 'type', event, deltaClintX, Y, Z
+// #       out: normalised value.
+// #       its a algorithm, but every input need a max var to be memorized.
+// #   the simple solution is put the max var in the call back function.  This is very natural in JS.
+//
+// #   And we can use a function factory to describe this algorithm.
+//      these functions are the same, factory does not need arguments
+// #
+
+function genFunNormaliser (){
+    return function () {
+        var max = 0;
+        return function (v){
+            abs = Math.abs(v);
+            if (abs > max) { max = abs; }
+            return v / max;
+        }
+    }();
+}
+
 define(function(){
-    var zoomRatio = 0.01;
-    var rotateRatio = 0.1;
-    var panRatio = 0.1;
+    var zoomRatio = 1;
+    var rotateRatio = 1;
+    var panRatio = 1;
     var cursor = {};
 
+
     function decorate(el){
-        // helper
+        // helper: dispatch custom event
         function dispatch(el, na, val){
             el.dispatchEvent(new CustomEvent(na, {'detail': val}));
         }
@@ -43,7 +88,8 @@ define(function(){
 
         // wheel zoom
         el.addEventListener('wheel', function(e){
-            dispatch(el, 'zoom', e.deltaY * zoomRatio);
+            norm = genFunNormaliser();
+            dispatch(el, 'zoom', norm(e.deltaY) * zoomRatio);
         });
 
         // drag rotate
@@ -52,12 +98,14 @@ define(function(){
             cursor.deltaClientY = e.clientY - cursor.prevClientY;
             cursor.prevClientX = e.clientX;
             cursor.prevClientY = e.clientY;
+            normX = genFunNormaliser();
+            normY = genFunNormaliser();
             if(spaceKey)
-                dispatch(el,'rotate', cursor.deltaClientX * rotateRatio);
+                dispatch(el,'rotate', normX(cursor.deltaClientX) * rotateRatio);
             else
                 dispatch(el,'pan', {
-                    deltaX: cursor.deltaClientX * panRatio,
-                    deltaY: cursor.deltaClientY * panRatio,
+                    deltaX: normX(cursor.deltaClientX) * panRatio,
+                    deltaY: normY(cursor.deltaClientY) * panRatio,
                 });
         }
 

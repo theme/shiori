@@ -1,4 +1,4 @@
-define ['log','axis'], (log, Axis) ->
+define ['log','Axis'], (log, Axis) ->
     V3 = THREE.Vector3 # helper
     class Compass extends THREE.Object3D
         constructor: () ->

@@ -28,10 +28,10 @@ define () ->
             # calculate on screen X,Y
             rect.width = rect.right - rect.left
             rect.height = rect.top - rect.bottom
-            projScreenMat = new THREE.Matrix4
+            mvp = new THREE.Matrix4 # proj * view * model matrix
             # TODO
-            projScreenMat.multiplyMatrices camera.projectionMatrix, camera.matrixWorldInverse
-            pos.applyProjection projScreenMat
+            mvp.multiplyMatrices camera.projectionMatrix, camera.matrixWorldInverse
+            pos.applyProjection mvp
 
             @sX= ( pos.x + 1 ) * rect.width / 2 + rect.left
             @sY= ( - pos.y + 1) * rect.height / 2 + rect.top
