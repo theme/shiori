@@ -39,7 +39,8 @@ function genFunNormaliser (){
         return function (v){
             abs = Math.abs(v);
             if (abs > max) { max = abs; }
-            return v / max;
+            console.log(max);
+            return 1.0 * v / max;
         }
     }();
 }
@@ -49,7 +50,9 @@ define(function(){
     var rotateRatio = 1;
     var panRatio = 1;
     var cursor = {};
-
+    var normWheelY = genFunNormaliser();
+    var normMouseX = genFunNormaliser();
+    var normMouseY = genFunNormaliser();
 
     function decorate(el){
         // helper: dispatch custom event
@@ -88,8 +91,7 @@ define(function(){
 
         // wheel zoom
         el.addEventListener('wheel', function(e){
-            norm = genFunNormaliser();
-            dispatch(el, 'zoom', norm(e.deltaY) * zoomRatio);
+            dispatch(el, 'zoom', normWheelY(e.deltaY) * zoomRatio);
         });
 
         // drag rotate
@@ -98,14 +100,12 @@ define(function(){
             cursor.deltaClientY = e.clientY - cursor.prevClientY;
             cursor.prevClientX = e.clientX;
             cursor.prevClientY = e.clientY;
-            normX = genFunNormaliser();
-            normY = genFunNormaliser();
             if(spaceKey)
-                dispatch(el,'rotate', normX(cursor.deltaClientX) * rotateRatio);
+                dispatch(el,'rotate', normMouseX(cursor.deltaClientX) * rotateRatio);
             else
                 dispatch(el,'pan', {
-                    deltaX: normX(cursor.deltaClientX) * panRatio,
-                    deltaY: normY(cursor.deltaClientY) * panRatio,
+                    deltaX: normMouseX(cursor.deltaClientX) * panRatio,
+                    deltaY: normMouseY(cursor.deltaClientY) * panRatio,
                 });
         }
 
