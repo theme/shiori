@@ -1,37 +1,18 @@
 // navigation input events
 // on a DOM element (that has: wheel, mousedown, mousemove)
 //
-// # TODO: Normalise input amount to [-1,1]
-// # to reduce zoom amount, I have to make wheel and touchpad scale nearly same amount
-// #
-// # wheel input is very large, check it from log:
-// # +,- 636~ 5888 for every tick
-// #
-// # while touchpad relativly small:
-// # +,- 1 ~ 332 (depends on speed)
-// #
-// # ?? can I get device resolution ?
-// # WEb API seems not giving the device's one tick amount.
-// 
-// # then we have to adapt according to the input.
-// # HOPE: scroll gives in equal max of moving.
-// # Normalise mouse wheel and touch pad into [-1,1]
-// # then the actual effective max zoom speed (a setting) can be set in other part of the application ( as long as input is always in 0 ~ 1)
+// # DONE: Normalise input amount to [-1,1]
+// # but there are some other questions:
+// # 1.touch move is normalised using the same factor with mouse drag
+// # 2.browser emulate mousemove from touch move, but they have different input scale
 //
-// # The normalisation can be done in the InputMixer module.
+// To address these:
+// 1. distinguish mouse and touch , use different normaliser for them, or
+// 2 noticing : drag adapt is not good when we want to drag fast some times, and after that we still can drag slow / fast.
 //
-// # Algorithm: each input has a related variable recording the max amount ever seen.
-// # then every input is divided by this max value, getting an output in range [0, 1]
-// #
-// #   Does this has to be a class?
-// #       in: data is 'type', event, deltaClintX, Y, Z
-// #       out: normalised value.
-// #       its a algorithm, but every input need a max var to be memorized.
-// #   the simple solution is put the max var in the call back function.  This is very natural in JS.
-//
-// #   And we can use a function factory to describe this algorithm.
-//      these functions are the same, factory does not need arguments
-// #
+// ... what we want really is:
+// 1. normalise zoom event value amount into [-1,1]. Distinguish mouse and touchpad input is needed, because they have different scale.
+// 2. do nothing to drag event amount, because it's in pixel, mouse and touchpad input are already in same scale.
 
 function genFunNormaliser (){
     return function () {
@@ -51,8 +32,6 @@ define(function(){
     var panRatio = 1;
     var cursor = {};
     var normWheelY = genFunNormaliser();
-    var normMouseX = genFunNormaliser();
-    var normMouseY = genFunNormaliser();
 
     function decorate(el){
         // helper: dispatch custom event
@@ -101,11 +80,11 @@ define(function(){
             cursor.prevClientX = e.clientX;
             cursor.prevClientY = e.clientY;
             if(spaceKey)
-                dispatch(el,'rotate', normMouseX(cursor.deltaClientX) * rotateRatio);
+                dispatch(el,'rotate', cursor.deltaClientX * rotateRatio);
             else
                 dispatch(el,'pan', {
-                    deltaX: normMouseX(cursor.deltaClientX) * panRatio,
-                    deltaY: normMouseY(cursor.deltaClientY) * panRatio,
+                    deltaX: cursor.deltaClientX * panRatio,
+                    deltaY: cursor.deltaClientY * panRatio,
                 });
         }
 
