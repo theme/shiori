@@ -52,8 +52,10 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
 
     # camera
     initCamera = ->
+        r = 25/cch()
         # Perspective
         pCam = new THREE.PerspectiveCamera 75, ccw()/cch(),1,100
+        pCam.r = r
         pCam.update = ->
             @aspect = ccw()/cch()
             @updateProjectionMatrix()
@@ -62,7 +64,6 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
         pCam.position.set 0,0,20
 
         # Orthographic
-        r = 100/cch()
         oCam = new THREE.OrthographicCamera(
             -r*ccw(), r*ccw(), r*cch(), -r*cch(), cch()/-2, cch()/2
         )
@@ -166,7 +167,7 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
 
         # pan
         canvas.addEventListener 'pan', (e) ->
-            speed = 4
+            speed = camera.r * 2
             camUp = new THREE.Vector3 0,1,0
             camRight = new THREE.Vector3 1,0,0
             q = new THREE.Quaternion
@@ -176,9 +177,9 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
 
             v = camera.tgt.clone().sub camera.position
             camera.position.add camRight.multiplyScalar(
-                -e.detail.deltaX / camera.zoom * speed)
+                -e.detail.deltaX * speed / camera.zoom)
             camera.position.add camUp.multiplyScalar(
-                e.detail.deltaY / camera.zoom * speed)
+                e.detail.deltaY * speed / camera.zoom)
             camera.tgt.copy v.add camera.position
             render()
             return
