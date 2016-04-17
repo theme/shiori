@@ -30,7 +30,7 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
     initHUD = (camera, render) ->
         hud = new HUD()
         gui = new dat.GUI()
-        z = gui.add(hud, 'logZoom', 1, 15).listen()
+        z = gui.add(hud, 'logZoom', -15, 15).listen()
         z.onFinishChange (value) ->
             camera.zoom = Math.exp(value)
             render()
@@ -96,7 +96,7 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
                 else a2b oCam,pCam
         return camera
 
-    # test el size after 500 ms, callback if size changed
+    # watch window resize, adjust canvas
     watchResize = (el, callback) ->
         h = el.clientHeight # remember value of now
         w = el.clientWidth
@@ -143,9 +143,8 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
 
         # zoom
         canvas.addEventListener 'zoom', (e) ->
-            log e.detail
-            speed = 0.1
-            z = camera.zoom-e.detail*speed*camera.zoom
+            speed = 0.01
+            z = (1-e.detail*speed) * camera.zoom
             camera.zoom = z if z > 0
             camera.updateProjectionMatrix()
             # log 'zoom',camera.zoom
@@ -167,7 +166,6 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
 
         # pan
         canvas.addEventListener 'pan', (e) ->
-            log e.detail #TODO: error will raise. move from input to here, and re-organise ratio
             speed = 4
             camUp = new THREE.Vector3 0,1,0
             camRight = new THREE.Vector3 1,0,0

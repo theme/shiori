@@ -1,29 +1,8 @@
-// navigation input events
-// on a DOM element (that has: wheel, mousedown, mousemove)
-//
-// # DONE: Normalise input amount to [-1,1]
-// # but there are some other questions:
-// # 1.touch move is normalised using the same factor with mouse drag
-// # 2.browser emulate mousemove from touch move, but they have different input scale
-//
-// To address these:
-// 1. distinguish mouse and touch , use different normaliser for them, or
-// 2 noticing : drag adapt is not good when we want to drag fast some times, and after that we still can drag slow / fast.
-//
-// ... what we want really is:
-// 1. normalise zoom event value amount into [-1,1]. Distinguish mouse and touchpad input is needed, because they have different scale.
-// 2. do nothing to drag event amount, because it's in pixel, mouse and touchpad input are already in same scale.
 
-function genFunNormaliser (){
-    return function () {
-        var max = 0;
-        return function (v){
-            abs = Math.abs(v);
-            if (abs > max) { max = abs; }
-            console.log(max);
-            return 1.0 * v / max;
-        }
-    }();
+function normalise( v ) {
+    var sign = v > 0 ? 1 : -1;
+    v = Math.abs(v);
+    return sign* Math.log(v+1);
 }
 
 define(function(){
@@ -31,7 +10,6 @@ define(function(){
     var rotateRatio = 1;
     var panRatio = 1;
     var cursor = {};
-    var normWheelY = genFunNormaliser();
 
     function decorate(el){
         // helper: dispatch custom event
@@ -70,7 +48,7 @@ define(function(){
 
         // wheel zoom
         el.addEventListener('wheel', function(e){
-            dispatch(el, 'zoom', normWheelY(e.deltaY) * zoomRatio);
+            dispatch(el, 'zoom', normalise(e.deltaY * zoomRatio));
         });
 
         // drag rotate
@@ -79,13 +57,16 @@ define(function(){
             cursor.deltaClientY = e.clientY - cursor.prevClientY;
             cursor.prevClientX = e.clientX;
             cursor.prevClientY = e.clientY;
-            if(spaceKey)
-                dispatch(el,'rotate', cursor.deltaClientX * rotateRatio);
-            else
+            if(spaceKey){
+                dispatch(el,'rotate', normalise(cursor.deltaClientX * rotateRatio));
+            }
+            else {
                 dispatch(el,'pan', {
                     deltaX: cursor.deltaClientX * panRatio,
                     deltaY: cursor.deltaClientY * panRatio,
                 });
+            }
+
         }
 
         function onMouseDown(e){
