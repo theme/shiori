@@ -142,13 +142,15 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
         InputMixer.decorate canvas # cavas now has 'zoom','rotate' ev
         camera.lookAt camera.tgt
 
+        # helper : camera screen pixel to coordinate scale
+        p2c = (pix) -> pix * camera.r * 2 / camera.zoom
+
         # zoom
         canvas.addEventListener 'zoom', (e) ->
             speed = 0.01
             z = (1-e.detail*speed) * camera.zoom
             camera.zoom = z if z > 0
             camera.updateProjectionMatrix()
-            # log 'zoom',camera.zoom
             hud.logZoom = Math.log camera.zoom
             render()
             return
@@ -158,7 +160,7 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
             v = camera.position.clone().sub camera.tgt
             v.applyAxisAngle(
                 new THREE.Vector3(0,1,0),
-                -e.detail
+                - Math.atan(p2c(e.detail)/v.length())
             )
             camera.position.copy v.add camera.tgt
             camera.lookAt camera.tgt
@@ -167,7 +169,6 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
 
         # pan
         canvas.addEventListener 'pan', (e) ->
-            speed = camera.r * 2
             camUp = new THREE.Vector3 0,1,0
             camRight = new THREE.Vector3 1,0,0
             q = new THREE.Quaternion
@@ -176,10 +177,8 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
             camRight.applyQuaternion q
 
             v = camera.tgt.clone().sub camera.position
-            camera.position.add camRight.multiplyScalar(
-                -e.detail.deltaX * speed / camera.zoom)
-            camera.position.add camUp.multiplyScalar(
-                e.detail.deltaY * speed / camera.zoom)
+            camera.position.add camRight.multiplyScalar(- p2c e.detail.deltaX)
+            camera.position.add camUp.multiplyScalar(p2c e.detail.deltaY)
             camera.tgt.copy v.add camera.position
             render()
             return
