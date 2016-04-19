@@ -1,7 +1,7 @@
 requirejs.config {
     baseUrl: '/js'
 }
-require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage, Label, InputMixer) ->
+require ['log','Compass','WebPage','Label','InputMixer','DataGroup'], (log, Compass, WebPage, Label, InputMixer, DataGroup) ->
     canvas = null
     scene = null
 
@@ -26,9 +26,9 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
     labelroot = $('labelroot')
 
     # contents
-    bookmarksGroup = new THREE.Object3D
+    bookmarksGroup = new DataGroup
     bookmarksGroup.loaded = false
-    historyGroup = new THREE.Object3D
+    historyGroup = new DataGroup
     historyGroup.loaded = false
 
     # HUD on canvas
@@ -46,10 +46,6 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
             render()
             return
         return gui
-
-    # contents position.x min / max
-    cmin = Date.now()
-    cmax = 0
 
     # constant
     msInYear = 1000 * 3600 * 24 * 365
@@ -237,11 +233,11 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
             log a.length,'history record(s)'
             for hi in a
                 do (hi) ->
-                    if hi.lastVisitTime < cmin then cmin = hi.lastVisitTime
-                    if cmax < hi.lastVisitTime then cmax = hi.lastVisitTime
                     p = new WebPage(hi.url,hi.title, hi.lastVisitTime)
                     p.translateX p.atime/msInYear
                     historyGroup.add p
+            [cmin,cmax] = historyGroup.rangeOf Date.now(),0,(o)->
+                o.atime
             camera.zoomTo cmin/msInYear,cmax/msInYear
             hud.logZoom = Math.log camera.zoom
             historyGroup.loaded = true
@@ -255,8 +251,6 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
         bmCount = 0
         chrome.bookmarks.getTree (bmlist)->
             addBmNode = (n)->
-                if n.dateAdded < cmin then cmin = n.dateAdded
-                if cmax < n.dateAdded then cmax = n.dateAdded
                 bmCount += 1
                 p = new WebPage n.url,n.title,n.dateAdded
                 p.translateX p.atime/msInYear
@@ -269,8 +263,11 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
                         if bm.children?
                             traverseTree bm.children, callback
                 return
+
             traverseTree bmlist,addBmNode
             log bmCount,'bookmarks'
+            [cmin,cmax] = bookmarksGroup.rangeOf Date.now(),0,(o)->
+                o.atime
             camera.zoomTo cmin/msInYear,cmax/msInYear
             hud.logZoom = Math.log camera.zoom
             bookmarksGroup.loaded = true
