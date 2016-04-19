@@ -16,11 +16,21 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
     mixer = null    # animation player
     mixerActions = []   # animation actions list
 
+    # helper
+    ccw = -> canvas.clientWidth
+    cch = -> canvas.clientHeight
+    cas = -> ccw() / cch()
+    $ = (id) -> return document.getElementById id
+
+    # labels layer ( in DOM )
+    labelroot = $('labelroot')
+
     # contents
     bookmarksGroup = new THREE.Object3D
     bookmarksGroup.loaded = false
     historyGroup = new THREE.Object3D
     historyGroup.loaded = false
+
     # HUD on canvas
     hud = null
     class HUD
@@ -40,12 +50,6 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
     # contents position.x min / max
     cmin = Date.now()
     cmax = 0
-
-    # helper
-    ccw = -> canvas.clientWidth
-    cch = -> canvas.clientHeight
-    cas = -> ccw() / cch()
-    $ = (id) -> return document.getElementById id
 
     # constant
     msInYear = 1000 * 3600 * 24 * 365
@@ -110,9 +114,9 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
         , 500)
 
     resetCameraView = ->
-        canvas.width = canvas.clientWidth
-        canvas.height = canvas.clientHeight
-        renderer.setViewport(0,0,canvas.clientWidth, canvas.clientHeight)
+        canvas.width = ccw()
+        canvas.height = cch()
+        renderer.setViewport 0,0,ccw(),cch()
         render()
         # camera.update()
 
@@ -199,7 +203,12 @@ require ['log','Compass','WebPage','Label','InputMixer'], (log, Compass, WebPage
         # renderer.render(scene, camera)
         
         camera.update()
+
+        # detach labels
+        $('main').removeChild labelroot
         scene.traverse (obj) -> obj.update?(camera, renderer)
+        # re attach labels
+        $('main').appendChild labelroot
 
         mixer.update delta # animation
 
