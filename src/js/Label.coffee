@@ -39,9 +39,6 @@ define () ->
 
             @sX= ( pos.x + 1 ) * rect.width / 2 + rect.left
             @sY= ( - pos.y + 1) * rect.height / 2 + rect.top
-            # every change of label div style triggers layout of web page, this is slow.
-            # to solve: try detach all div and update its style, after that, re-attach all label.
-            # this can be down using a absolute div (0,0) as parent.
             @div.style.left = @sX
             @div.style.top = @sY
             return

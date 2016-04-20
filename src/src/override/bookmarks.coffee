@@ -1,7 +1,7 @@
 requirejs.config {
     baseUrl: '/js'
 }
-require ['log','Compass','WebPage','Label','InputMixer','DataGroup'], (log, Compass, WebPage, Label, InputMixer, DataGroup) ->
+require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup'], (log, Axis, Compass, WebPage, Label, InputMixer, DataGroup) ->
     canvas = null
     scene = null
 
@@ -48,11 +48,11 @@ require ['log','Compass','WebPage','Label','InputMixer','DataGroup'], (log, Comp
         return gui
 
     # constant
-    msInYear = 1000 * 3600 * 24 * 365
+    msInHour = 1000 * 3600
 
     # camera
     initCamera = ->
-        r = 25/cch()
+        r = 1
         # Perspective
         pCam = new THREE.PerspectiveCamera 75, ccw()/cch(),1,100
         pCam.r = r
@@ -171,14 +171,9 @@ require ['log','Compass','WebPage','Label','InputMixer','DataGroup'], (log, Comp
         canvas.addEventListener 'pan', (e) ->
             camUp = new THREE.Vector3 0,1,0
             camRight = new THREE.Vector3 1,0,0
-            q = new THREE.Quaternion
-            q.setFromRotationMatrix camera.matrixWorld
-            camUp.applyQuaternion q
-            camRight.applyQuaternion q
-
             v = camera.tgt.clone().sub camera.position
-            camera.position.add camRight.multiplyScalar(- p2c e.detail.deltaX)
-            camera.position.add camUp.multiplyScalar(p2c e.detail.deltaY)
+            camera.translateOnAxis(camUp, p2c e.detail.deltaY)
+            camera.translateOnAxis(camRight, - p2c e.detail.deltaX)
             camera.tgt.copy v.add camera.position
             render()
             return
@@ -221,7 +216,7 @@ require ['log','Compass','WebPage','Label','InputMixer','DataGroup'], (log, Comp
     watchHistory = (scene) ->
         chrome.history.onVisited.addListener (hi)->
             p = new WebPage(hi.url,hi.title, hi.lastVisitTime)
-            p.translateX p.atime/msInYear
+            p.translateX p.atime/msInHour
             log 'history onVisited',p.id,p.url
             historyGroup.add(p)
             render()
@@ -233,12 +228,12 @@ require ['log','Compass','WebPage','Label','InputMixer','DataGroup'], (log, Comp
             log a.length,'history record(s)'
             for hi in a
                 do (hi) ->
-                    p = new WebPage(hi.url,hi.title, hi.lastVisitTime)
-                    p.translateX p.atime/msInYear
+                    p = new WebPage(hi.url,hi.title,hi.lastVisitTime)
+                    p.translateX p.atime/msInHour
                     historyGroup.add p
             [cmin,cmax] = historyGroup.rangeOf Date.now(),0,(o)->
                 o.atime
-            camera.zoomTo cmin/msInYear,cmax/msInYear
+            camera.zoomTo cmin/msInHour,cmax/msInHour
             hud.logZoom = Math.log camera.zoom
             historyGroup.loaded = true
             scene.add historyGroup
@@ -253,7 +248,7 @@ require ['log','Compass','WebPage','Label','InputMixer','DataGroup'], (log, Comp
             addBmNode = (n)->
                 bmCount += 1
                 p = new WebPage n.url,n.title,n.dateAdded
-                p.translateX p.atime/msInYear
+                p.translateX p.atime/msInHour
                 bookmarksGroup.add p
                 return
             traverseTree = (bmlist, callback)-> # define
@@ -268,7 +263,7 @@ require ['log','Compass','WebPage','Label','InputMixer','DataGroup'], (log, Comp
             log bmCount,'bookmarks'
             [cmin,cmax] = bookmarksGroup.rangeOf Date.now(),0,(o)->
                 o.atime
-            camera.zoomTo cmin/msInYear,cmax/msInYear
+            camera.zoomTo cmin/msInHour,cmax/msInHour
             hud.logZoom = Math.log camera.zoom
             bookmarksGroup.loaded = true
             scene.add bookmarksGroup
