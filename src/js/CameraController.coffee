@@ -13,24 +13,26 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
                 do (c) -> self.regCamera c
 
             InputMixer.decorate canvas # add following events
-            @canvas.addEventListener 'zoom', (e) -> self.zoom e.detail
-            @canvas.addEventListener 'rotate', (e) -> self.rotate e.detail
+            @canvas.addEventListener 'zoom', (e) -> self.zoomP e.detail
+            @canvas.addEventListener 'rotate', (e) -> self.rotateP e.detail
             @canvas.addEventListener 'pan', (e) ->
-                self.pan e.detail.deltaX, e.detail.deltaY
+                self.panP e.detail.deltaX, e.detail.deltaY
             @canvas.addEventListener 'cam', (e) -> self.switchCam e.detail
 
         p2c: (pix) ->
             pix * @ccam.r * 2 / @ccam.zoom
 
-        zoom: (p) -> # p in pixcel
-            speed = 0.01
-            z = (1- p*speed) * @ccam.zoom
+        zoom: (z) ->
             @ccam.zoom = z if z > 0
             @ccam.updateProjectionMatrix()
             @emit 'zoom', @ccam.zoom
             @emit 'render'
 
-        rotate: (p) ->
+        zoomP: (p) -> # p in pixcel
+            speed = 0.01
+            @zoom (1- p*speed) * @ccam.zoom
+
+        rotateP: (p) ->
             v = @ccam.position.clone().sub @ccam.tgt
             v.applyAxisAngle(
                 new THREE.Vector3(0,1,0),
@@ -40,7 +42,15 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             @ccam.lookAt @ccam.tgt
             @emit 'render'
 
-        pan: (px,py)->
+        pos: () -> @ccam.position.clone()
+
+        moveTo: (p) ->
+            v = @ccam.tgt.clone().sub @ccam.position
+            @ccam.position.copy p
+            @ccam.tgt.copy v.add @ccam.position
+            @emit 'render'
+
+        panP: (px,py)->
             camUp = new THREE.Vector3 0,1,0
             camRight = new THREE.Vector3 1,0,0
             v = @ccam.tgt.clone().sub @ccam.position

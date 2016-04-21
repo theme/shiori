@@ -34,15 +34,23 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
     class HUD
         constructor: () ->
             @logZoom = 0.8
+            @camX = 0
+            @camY = 0
 
     initHUD = (camera, render) ->
         hud = new HUD()
         gui = new dat.GUI()
-        z = gui.add(hud, 'logZoom', -15, 15).listen()
-        z.onFinishChange (value) ->
-            camera.zoom = Math.exp(value)
-            render()
-            return
+        s = 0.000001
+        fCamera = gui.addFolder 'Camera'
+        z = fCamera.add(hud, 'logZoom',-15,15).listen()
+        z.onFinishChange (v) -> cameraCtl.zoom Math.exp(v)
+        camX = fCamera.add(hud, 'camX').step(s).listen()
+        camX.onFinishChange (v) ->
+            cameraCtl.moveTo cameraCtl.pos().setX(v)
+        camY = fCamera.add(hud, 'camY').step(s).listen()
+        camY.onFinishChange (v) ->
+            cameraCtl.moveTo cameraCtl.pos().setY(v)
+        fCamera.open()
         return gui
 
     initCamera = ->
@@ -112,15 +120,18 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
         cameraCtl.setCurrent oCam
         cameraCtl.on 'render', render
 
+
         # Viewport
         handleCanvasResize()
         watchResize canvas, handleCanvasResize
 
         # HUD widget
         $('HUD').appendChild initHUD(camera, render).domElement
-        cameraCtl.on('zoom', (z)->
+        cameraCtl.on 'zoom', (z)->
             hud.logZoom = Math.log cameraCtl.currentCam().zoom
-        )
+        cameraCtl.on 'render', ()->
+            hud.camX = cameraCtl.currentCam().position.x
+            hud.camY = cameraCtl.currentCam().position.y
 
         return
 
