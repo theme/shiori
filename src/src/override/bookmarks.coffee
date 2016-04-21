@@ -1,13 +1,11 @@
-requirejs.config {
-    baseUrl: '/js'
-}
-require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup'], (log, Axis, Compass, WebPage, Label, InputMixer, DataGroup) ->
+require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','CameraController'], (log, Axis, Compass, WebPage, Label, InputMixer, DataGroup, CameraController) ->
     canvas = null
     scene = null
 
     camera = null
     pCam = null
     oCam = null
+    cameraCtl = null
 
     renderer = null
 
@@ -19,7 +17,6 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup'], (lo
     # helper
     ccw = -> canvas.clientWidth
     cch = -> canvas.clientHeight
-    cas = -> ccw() / cch()
     $ = (id) -> return document.getElementById id
 
     # labels layer ( in DOM )
@@ -30,6 +27,7 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup'], (lo
     bookmarksGroup.loaded = false
     historyGroup = new DataGroup
     historyGroup.loaded = false
+    msInHour = 1000 * 3600
 
     # HUD on canvas
     hud = null
@@ -47,55 +45,39 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup'], (lo
             return
         return gui
 
-    # constant
-    msInHour = 1000 * 3600
-
-    # camera
     initCamera = ->
-        r = 1
+        r = 25/cch()
         # Perspective
         pCam = new THREE.PerspectiveCamera 75, ccw()/cch(),1,100
         pCam.r = r
+        pCam.tgt = new THREE.Vector3
+        pCam.position.set 0,0,20
+        pCam.lookAt pCam.tgt
         pCam.update = ->
             @aspect = ccw()/cch()
             @updateProjectionMatrix()
-        pCam.tgt = new THREE.Vector3
-        pCam.zoomTo = (min,max)-> return
-        pCam.position.set 0,0,20
+        pCam.lookAtRange = (min,max)-> return
 
         # Orthographic
         oCam = new THREE.OrthographicCamera(
-            -r*ccw(), r*ccw(), r*cch(), -r*cch(), cch()/-2, cch()/2
+            -r*ccw()/2, r*ccw()/2, r*cch()/2, -r*cch()/2, 0, 100
         )
         oCam.r = r
-        oCam.update = ->
-            @left   = - ccw()*oCam.r
-            @right  = + ccw()*oCam.r
-            @top    = + cch()*oCam.r
-            @bottom = - cch()*oCam.r
-            @updateProjectionMatrix()
         oCam.tgt = new THREE.Vector3
-        oCam.zoomTo = (min,max)->
+        oCam.position.set 0,0,20
+        oCam.lookAt oCam.tgt
+        oCam.update = ->
+            @left   = - ccw()*oCam.r /2
+            @right  = + ccw()*oCam.r /2
+            @top    = + cch()*oCam.r /2
+            @bottom = - cch()*oCam.r /2
+            @updateProjectionMatrix()
+        oCam.lookAtRange = (min,max)->
             @zoom = (@right-@left)/(max-min) # calc zoom
             @updateProjectionMatrix() # update matrix
             @position.set ((min + max)/2),0,20
             log min,max,'zoom:',@zoom,'oCam.position.x',@position.x
-
-        oCam.position.set 0,0,20
-
-        return camera = oCam
-
-    switchCam = (type) ->
-        a2b = (a,b) -> camera = b
-        switch type
-            when 'oCam'
-                a2b pCam,oCam if camera != oCam
-            when 'pCam'
-                a2b oCam,pCam if camera != pCam
-            when 'nextCam'
-                if camera == pCam then a2b pCam,oCam
-                else a2b oCam,pCam
-        return camera
+        return
 
     # watch window resize, adjust canvas
     watchResize = (el, callback) ->
@@ -109,12 +91,9 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup'], (lo
                 return
         , 500)
 
-    resetCameraView = ->
-        canvas.width = ccw()
-        canvas.height = cch()
-        renderer.setViewport 0,0,ccw(),cch()
+    handleCanvasResize = ->
+        # renderer.setViewport 0,0,ccw(),cch()
         render()
-        # camera.update()
 
     init = ->
         # canvas
@@ -125,91 +104,48 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup'], (lo
         renderer.setClearColor new THREE.Color 0x003366
         log 'renderer.precision:',renderer.getPrecision()
 
-
-        # camera
+        # Camera
         initCamera()
 
-        # reset view
-        resetCameraView()
+        # Camera Control
+        cameraCtl = new CameraController canvas, [oCam,pCam]
+        cameraCtl.setCurrent oCam
+        cameraCtl.on 'render', render
 
-        # gui
+        # Viewport
+        handleCanvasResize()
+        watchResize canvas, handleCanvasResize
+
+        # HUD widget
         $('HUD').appendChild initHUD(camera, render).domElement
+        cameraCtl.on('zoom', (z)->
+            hud.logZoom = Math.log cameraCtl.currentCam().zoom
+        )
 
-        # Watch vanvas resize
-        watchResize canvas, resetCameraView
+        return
 
-        # navigation input & camera control
-        InputMixer.decorate canvas # cavas now has 'zoom','rotate' ev
-        camera.lookAt camera.tgt
-
-        # helper : camera screen pixel to coordinate scale
-        p2c = (pix) -> pix * camera.r * 2 / camera.zoom
-
-        # zoom
-        canvas.addEventListener 'zoom', (e) ->
-            speed = 0.01
-            z = (1-e.detail*speed) * camera.zoom
-            camera.zoom = z if z > 0
-            camera.updateProjectionMatrix()
-            hud.logZoom = Math.log camera.zoom
-            render()
-            return
-
-        # rotate
-        canvas.addEventListener 'rotate', (e) ->
-            v = camera.position.clone().sub camera.tgt
-            v.applyAxisAngle(
-                new THREE.Vector3(0,1,0),
-                - Math.atan(p2c(e.detail)/v.length())
-            )
-            camera.position.copy v.add camera.tgt
-            camera.lookAt camera.tgt
-            render()
-            return
-
-        # pan
-        canvas.addEventListener 'pan', (e) ->
-            camUp = new THREE.Vector3 0,1,0
-            camRight = new THREE.Vector3 1,0,0
-            v = camera.tgt.clone().sub camera.position
-            camera.translateOnAxis(camUp, p2c e.detail.deltaY)
-            camera.translateOnAxis(camRight, - p2c e.detail.deltaX)
-            camera.tgt.copy v.add camera.position
-            render()
-            return
-
-        # change camera
-        canvas.addEventListener 'cam', (e) ->
-            switchCam e.detail
-            render()
-            return
-
-    animate = ->
-        requestAnimationFrame animate
-        render()
-        
-    render = ->
+    updateAnimations = ->
         delta = clock.getDelta()
-        # do rendering before update, if animating
-        # renderer.render(scene, camera)
+
+        mixer.update delta
         
-        camera.update()
-
-        # detach labels
-        $('main').removeChild labelroot
-        scene.traverse (obj) -> obj.update?(camera, renderer)
-        # re attach labels
-        $('main').appendChild labelroot
-
-        mixer.update delta # animation
-
-        # stop play after stopTime
+        # stop animations after stopTime
         if clock.elapsedTime > stopTime
             for c in mixerActions
                 do (c) -> c.stop()
 
-        # do rendering after update, if not animating
-        renderer.render(scene, camera)
+        return
+        
+    render = ->
+        cameraCtl.currentCam().update()
+
+        $('main').removeChild labelroot  # reduce re-flow times
+        scene.traverse (obj) -> obj.update?(cameraCtl.currentCam(), renderer)
+        $('main').appendChild labelroot
+
+        # updateAnimations()
+
+        renderer.render(scene, cameraCtl.currentCam())
         return
 
     # watch chrome history
@@ -233,8 +169,7 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup'], (lo
                     historyGroup.add p
             [cmin,cmax] = historyGroup.rangeOf Date.now(),0,(o)->
                 o.atime
-            camera.zoomTo cmin/msInHour,cmax/msInHour
-            hud.logZoom = Math.log camera.zoom
+            cameraCtl.lookAtRange cmin/msInHour,cmax/msInHour
             historyGroup.loaded = true
             scene.add historyGroup
             render()
@@ -263,14 +198,14 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup'], (lo
             log bmCount,'bookmarks'
             [cmin,cmax] = bookmarksGroup.rangeOf Date.now(),0,(o)->
                 o.atime
-            camera.zoomTo cmin/msInHour,cmax/msInHour
-            hud.logZoom = Math.log camera.zoom
+            cameraCtl.lookAtRange cmin/msInHour,cmax/msInHour
             bookmarksGroup.loaded = true
             scene.add bookmarksGroup
             render()
             return
         return
 
+    # TODO: add toggle to DataGroup, let DataGroup extends EventEmitter
     set3objVis = (o, isVis = true)-> o.traverse (n)->
         n.visible = isVis
 
@@ -311,14 +246,11 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup'], (lo
         init()
 
         watchHistory scene
-        # loadHistory scene,camera
-        # loadBookmarks scene,camera
 
         # toggle on/off bookmarks
         watchToggles()
 
         render()
-        # animate()
     , (xhr) -> console.log xhr.loaded/xhr.total*100+'% loaded'
     )
 
