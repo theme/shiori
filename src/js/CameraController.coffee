@@ -20,7 +20,7 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             @canvas.addEventListener 'cam', (e) -> self.switchCam e.detail
 
         p2c: (pix) ->
-            pix * @ccam.r * 2 / @ccam.zoom
+            pix * @ccam.r / @ccam.zoom
 
         zoom: (z) ->
             @ccam.zoom = z if z > 0

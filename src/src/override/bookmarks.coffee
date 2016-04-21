@@ -100,7 +100,9 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
         , 500)
 
     handleCanvasResize = ->
-        # renderer.setViewport 0,0,ccw(),cch()
+        canvas.width = ccw() # is needed for renderer.setViewport
+        canvas.height = cch()
+        renderer.setViewport 0,0,ccw(),cch()
         render()
 
     init = ->
