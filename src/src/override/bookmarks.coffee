@@ -1,4 +1,4 @@
-require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','CameraController'], (log, Axis, Compass, WebPage, Label, InputMixer, DataGroup, CameraController) ->
+require ['log','Axis','Compass','Cube','WebPage','Label','InputMixer','DataGroup','CameraController'], (log, Axis, Compass, Cube, WebPage, Label, InputMixer, DataGroup, CameraController) ->
     canvas = null
     scene = null
 
@@ -205,17 +205,9 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
         for a in loadedScene.animations
             do (a) ->
                 mixerActions.push mixer.clipAction(a).play()
-        # a box
-        for i in [0..9]
-            for j in [0..9]
-                geometry = new THREE.BoxGeometry( 1, 0.1, 1 )
-                material = new THREE.MeshBasicMaterial( {color: 0x55ff00} )
-                cube = new THREE.Mesh( geometry, material )
-                cube.position.x = i * 2
-                cube.position.z = - j * 2
-                scene.add( cube )
 
         scene.add( new Compass )
+        scene.add( new Cube 0.2,0.2,0.2)
 
         init()
 
