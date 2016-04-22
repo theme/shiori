@@ -2,9 +2,6 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
     canvas = null
     scene = null
 
-    camera = null
-    pCam = null
-    oCam = null
     cameraCtl = null
 
     renderer = null
@@ -37,12 +34,12 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
             @camX = 0
             @camY = 0
 
-    initHUD = (camera, render) ->
+    initHUD = (render) ->
         hud = new HUD()
         gui = new dat.GUI()
         s = 0.000001
         fCamera = gui.addFolder 'Camera'
-        z = fCamera.add(hud, 'logZoom',-15,15).listen()
+        z = fCamera.add(hud, 'logZoom',-25,25).listen()
         z.onFinishChange (v) -> cameraCtl.zoom Math.exp(v)
         camX = fCamera.add(hud, 'camX').step(s).listen()
         camX.onFinishChange (v) ->
@@ -52,40 +49,6 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
             cameraCtl.moveTo cameraCtl.pos().setY(v)
         fCamera.open()
         return gui
-
-    initCamera = ->
-        r = 25/cch()
-        # Perspective
-        pCam = new THREE.PerspectiveCamera 75, ccw()/cch(),1,100
-        pCam.r = r
-        pCam.tgt = new THREE.Vector3
-        pCam.position.set 0,0,20
-        pCam.lookAt pCam.tgt
-        pCam.update = ->
-            @aspect = ccw()/cch()
-            @updateProjectionMatrix()
-        pCam.lookAtRange = (min,max)-> return
-
-        # Orthographic
-        oCam = new THREE.OrthographicCamera(
-            -r*ccw()/2, r*ccw()/2, r*cch()/2, -r*cch()/2, 0, 100
-        )
-        oCam.r = r
-        oCam.tgt = new THREE.Vector3
-        oCam.position.set 0,0,20
-        oCam.lookAt oCam.tgt
-        oCam.update = ->
-            @left   = - ccw()*oCam.r /2
-            @right  = + ccw()*oCam.r /2
-            @top    = + cch()*oCam.r /2
-            @bottom = - cch()*oCam.r /2
-            @updateProjectionMatrix()
-        oCam.lookAtRange = (min,max)->
-            @zoom = (@right-@left)/(max-min) # calc zoom
-            @updateProjectionMatrix() # update matrix
-            @position.set ((min + max)/2),0,20
-            log min,max,'zoom:',@zoom,'oCam.position.x',@position.x
-        return
 
     # watch window resize, adjust canvas
     watchResize = (el, callback) ->
@@ -115,20 +78,17 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
         log 'renderer.precision:',renderer.getPrecision()
 
         # Camera
-        initCamera()
-
-        # Camera Control
-        cameraCtl = new CameraController canvas, [oCam,pCam]
-        cameraCtl.setCurrent oCam
+        cameraCtl = new CameraController canvas
+        # cameraCtl.newPersCam()
+        cameraCtl.setCurrent cameraCtl.newOrthoCam()
         cameraCtl.on 'render', render
-
 
         # Viewport
         handleCanvasResize()
         watchResize canvas, handleCanvasResize
 
         # HUD widget
-        $('HUD').appendChild initHUD(camera, render).domElement
+        $('HUD').appendChild initHUD(render).domElement
         cameraCtl.on 'zoom', (z)->
             hud.logZoom = Math.log cameraCtl.currentCam().zoom
         cameraCtl.on 'render', ()->
@@ -150,7 +110,7 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
         return
         
     render = ->
-        cameraCtl.currentCam().update()
+        cameraCtl.update()
 
         $('main').removeChild labelroot  # reduce re-flow times
         scene.traverse (obj) -> obj.update?(cameraCtl.currentCam(), renderer)
@@ -170,7 +130,7 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
             historyGroup.add(p)
             render()
 
-    loadHistory = (scene, camera) ->
+    loadHistory = (scene) ->
         if historyGroup.loaded then return
         # show history
         chrome.history.search {text:'',maxResults:1000},(a)->
@@ -188,7 +148,7 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
             render()
             return
 
-    loadBookmarks = (scene, camera)->
+    loadBookmarks = (scene)->
         if bookmarksGroup.loaded then return
         # show bookmarks
         bmCount = 0
@@ -224,12 +184,12 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
 
     watchToggles = () ->
         $('check-history').addEventListener 'change', (e)->
-            loadHistory scene,camera if not historyGroup.loaded
+            loadHistory scene if not historyGroup.loaded
             set3objVis historyGroup,e.target?.checked
             render()
             return
         $('check-bookmarks').addEventListener 'change', (e)->
-            loadBookmarks scene,camera if not bookmarksGroup.loaded
+            loadBookmarks scene if not bookmarksGroup.loaded
             set3objVis bookmarksGroup,e.target?.checked
             render()
             return

@@ -1,6 +1,6 @@
 define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
     class CameraController extends EventEmitter
-        constructor: (canvas, camerasArray)->
+        constructor: (canvas)->
             super
             @canvas = canvas
             @cameraList = []
@@ -9,9 +9,6 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             @ccam = null # current Camera
 
             self = this
-            for c in camerasArray
-                do (c) -> self.regCamera c
-
             InputMixer.decorate canvas # add following events
             @canvas.addEventListener 'zoom', (e) -> self.zoomP e.detail
             @canvas.addEventListener 'rotate', (e) -> self.rotateP e.detail
@@ -19,8 +16,10 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
                 self.panP e.detail.deltaX, e.detail.deltaY
             @canvas.addEventListener 'cam', (e) -> self.switchCam e.detail
 
-        p2c: (pix) ->
-            pix * @ccam.r / @ccam.zoom
+        # helper
+        ccw: -> @canvas.clientWidth
+        cch: -> @canvas.clientHeight
+        p2c: (pix) -> pix * @ccam.r / @ccam.zoom
 
         zoom: (z) ->
             @ccam.zoom = z if z > 0
@@ -57,11 +56,6 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             @ccam.translateOnAxis(camRight, - @p2c px)
             @ccam.translateOnAxis(camUp, @p2c py)
             @ccam.tgt.copy v.add @ccam.position
-            @emit 'render'
-
-        lookAtRange: (min,max) ->
-            @ccam.lookAtRange min,max
-            @emit 'zoom', @ccam.zoom
             @emit 'render'
 
         regCamera: (camera)->
@@ -102,6 +96,57 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
                         @ccam = @cameraList[i+1]
                     @emit 'render'
                     return
+
+        update: (c)->
+            if c instanceof THREE.OrthographicCamera
+                c.left   = - @ccw()*c.r /2
+                c.right  = + @ccw()*c.r /2
+                c.top    = + @cch()*c.r /2
+                c.bottom = - @cch()*c.r /2
+                c.updateProjectionMatrix()
+            if c instanceof THREE.PerspectiveCamera
+                c.aspect = @ccw()/@cch()
+                c.updateProjectionMatrix()
+            if c == undefined
+                @update @ccam
+
+        lookAtRange: (min,max) ->
+            if @ccam instanceof THREE.OrthographicCamera
+                @ccam.zoom = (@ccam.right-@ccam.left)/(max-min)
+                @ccam.updateProjectionMatrix()
+                @ccam.position.set ((min + max)/2),0,20
+            if @ccam instanceof THREE.PerspectiveCamera
+                @ccam.position.set ((min + max)/2),0,20
+            @emit 'zoom', @ccam.zoom
+            @emit 'render'
+
+        newOrthoCam: ()->
+            oCam = new THREE.OrthographicCamera 0,1,0,1, 0, 100
+            oCam.tgt = new THREE.Vector3
+            oCam.r = 25/@cch()
+            oCam.position.set 0,0,20
+            oCam.lookAt oCam.tgt
+            @update oCam
+            @regCamera oCam
+            return oCam
+
+        newPersCam: ()->
+            pCam = new THREE.PerspectiveCamera 75, @ccw()/@cch(),1,100
+            pCam.r = 25/@cch()
+            pCam.tgt = new THREE.Vector3
+            pCam.position.set 0,0,20
+            pCam.lookAt pCam.tgt
+            @regCamera pCam
+            return pCam
+
+        newCam: (type)->
+            switch type
+                when 'oCam'
+                    return @newOrthoCam
+                when 'pCam'
+                    return @newPersCam
+                else
+                    return @newOrthoCam
 
     return CameraController
 
