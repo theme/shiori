@@ -6,6 +6,7 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
 
     renderer = null
 
+    # animation vars
     clock = new THREE.Clock
     stopTime = 5
     mixer = null    # animation player
@@ -20,10 +21,8 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
     labelroot = $('labelroot')
 
     # contents
-    bookmarksGroup = new DataGroup
-    bookmarksGroup.loaded = false
-    historyGroup = new DataGroup
-    historyGroup.loaded = false
+    bookmarksGroup = null
+    historyGroup = null
     msInHour = 1000 * 3600
 
     # HUD on canvas
@@ -63,7 +62,7 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
         , 500)
 
     handleCanvasResize = ->
-        canvas.width = ccw() # is needed for renderer.setViewport
+        canvas.width = ccw() # needed for renderer.setViewport
         canvas.height = cch()
         renderer.setViewport 0,0,ccw(),cch()
         render()
@@ -79,9 +78,8 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
 
         # Camera
         cameraCtl = new CameraController canvas
-        # cameraCtl.newPersCam()
         cameraCtl.setCurrent cameraCtl.newOrthoCam()
-        cameraCtl.on 'render', render
+        cameraCtl.on 'touched', render
 
         # Viewport
         handleCanvasResize()
@@ -91,9 +89,21 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
         $('HUD').appendChild initHUD(render).domElement
         cameraCtl.on 'zoom', (z)->
             hud.logZoom = Math.log cameraCtl.currentCam().zoom
-        cameraCtl.on 'render', ()->
+        cameraCtl.on 'touched', ()->
             hud.camX = cameraCtl.currentCam().position.x
             hud.camY = cameraCtl.currentCam().position.y
+
+        # Contents
+        historyGroup = new DataGroup
+        historyGroup.loaded = false
+        historyGroup.event.on 'loaded',render
+        historyGroup.event.on 'visible',render
+        historyGroup.event.on 'added', ()->
+            render() if historyGroup.visible
+        bookmarksGroup = new DataGroup
+        bookmarksGroup.loaded = false
+        bookmarksGroup.event.on 'loaded',render
+        bookmarksGroup.event.on 'visible',render
 
         return
 
@@ -109,7 +119,8 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
 
         return
         
-    render = ->
+    render = (f = true)->
+        if not f then return
         cameraCtl.update()
 
         $('main').removeChild labelroot  # reduce re-flow times
@@ -128,11 +139,9 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
             p.translateX p.atime/msInHour
             log 'history onVisited',p.id,p.url
             historyGroup.add(p)
-            render()
+            historyGroup.event.emit 'added'
 
     loadHistory = (scene) ->
-        if historyGroup.loaded then return
-        # show history
         chrome.history.search {text:'',maxResults:1000},(a)->
             log a.length,'history record(s)'
             for hi in a
@@ -140,17 +149,14 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
                     p = new WebPage(hi.url,hi.title,hi.lastVisitTime)
                     p.translateX p.atime/msInHour
                     historyGroup.add p
-            [cmin,cmax] = historyGroup.rangeOf Date.now(),0,(o)->
-                o.atime
-            cameraCtl.lookAtRange cmin/msInHour,cmax/msInHour
-            historyGroup.loaded = true
+            [cmin,cmax] = historyGroup.rangeOf 'x'
+            cameraCtl.lookAtRange cmin,cmax
             scene.add historyGroup
-            render()
+            historyGroup.event.emit 'loaded'
             return
+        return
 
     loadBookmarks = (scene)->
-        if bookmarksGroup.loaded then return
-        # show bookmarks
         bmCount = 0
         chrome.bookmarks.getTree (bmlist)->
             addBmNode = (n)->
@@ -169,29 +175,24 @@ require ['log','Axis','Compass','WebPage','Label','InputMixer','DataGroup','Came
 
             traverseTree bmlist,addBmNode
             log bmCount,'bookmarks'
-            [cmin,cmax] = bookmarksGroup.rangeOf Date.now(),0,(o)->
-                o.atime
-            cameraCtl.lookAtRange cmin/msInHour,cmax/msInHour
-            bookmarksGroup.loaded = true
+            [cmin,cmax] = bookmarksGroup.rangeOf 'x'
+            cameraCtl.lookAtRange cmin,cmax
             scene.add bookmarksGroup
-            render()
+            bookmarksGroup.loaded = true
+            bookmarksGroup.event.emit 'loaded'
             return
         return
 
-    # TODO: add toggle to DataGroup, let DataGroup extends EventEmitter
-    set3objVis = (o, isVis = true)-> o.traverse (n)->
-        n.visible = isVis
-
     watchToggles = () ->
         $('check-history').addEventListener 'change', (e)->
-            loadHistory scene if not historyGroup.loaded
-            set3objVis historyGroup,e.target?.checked
-            render()
+            if not historyGroup.loaded
+                loadHistory scene
+            historyGroup.setVisible e.target?.checked
             return
         $('check-bookmarks').addEventListener 'change', (e)->
-            loadBookmarks scene if not bookmarksGroup.loaded
-            set3objVis bookmarksGroup,e.target?.checked
-            render()
+            if not bookmarksGroup.loaded
+                loadBookmarks scene
+            bookmarksGroup.setVisible e.target?.checked
             return
 
     # load scene & start render

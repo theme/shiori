@@ -25,7 +25,7 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             @ccam.zoom = z if z > 0
             @ccam.updateProjectionMatrix()
             @emit 'zoom', @ccam.zoom
-            @emit 'render'
+            @emit 'touched'
 
         zoomP: (p) -> # p in pixcel
             speed = 0.01
@@ -39,7 +39,7 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             )
             @ccam.position.copy v.add @ccam.tgt
             @ccam.lookAt @ccam.tgt
-            @emit 'render'
+            @emit 'touched'
 
         pos: () -> @ccam.position.clone()
 
@@ -47,7 +47,7 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             v = @ccam.tgt.clone().sub @ccam.position
             @ccam.position.copy p
             @ccam.tgt.copy v.add @ccam.position
-            @emit 'render'
+            @emit 'touched'
 
         panP: (px,py)->
             camUp = new THREE.Vector3 0,1,0
@@ -56,7 +56,7 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             @ccam.translateOnAxis(camRight, - @p2c px)
             @ccam.translateOnAxis(camUp, @p2c py)
             @ccam.tgt.copy v.add @ccam.position
-            @emit 'render'
+            @emit 'touched'
 
         regCamera: (camera)->
             @cameraList.push camera
@@ -80,13 +80,13 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
                     if @ccam instanceof THREE.PerspectiveCamera
                         if @oCamList.length > 0
                             @ccam = @oCamList[0]
-                            @emit 'render'
+                            @emit 'touched'
                             return
                 when 'pCam'
                     if @ccam instanceof THREE.OrthographicCamera
                         if @pCamList.length > 0
                             @ccam = @pCamList[0]
-                            @emit 'render'
+                            @emit 'touched'
                             return
                 when 'nextCam'
                     i = @cameraList.indexOf @ccam
@@ -94,7 +94,7 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
                         @ccam = @cameraList[0]
                     else
                         @ccam = @cameraList[i+1]
-                    @emit 'render'
+                    @emit 'touched'
                     return
 
         update: (c)->
@@ -118,7 +118,7 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             if @ccam instanceof THREE.PerspectiveCamera
                 @ccam.position.set ((min + max)/2),0,20
             @emit 'zoom', @ccam.zoom
-            @emit 'render'
+            @emit 'touched'
 
         newOrthoCam: ()->
             oCam = new THREE.OrthographicCamera 0,1,0,1, 0, 100
