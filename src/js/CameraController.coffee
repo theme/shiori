@@ -1,4 +1,5 @@
-define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
+define ['Ruler','InputMixer','lib/EventEmitter'],(Ruler,InputMixer,EventEmitter)->
+    V3 = THREE.Vector3
     class CameraController extends EventEmitter
         constructor: (canvas)->
             super
@@ -8,24 +9,54 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             @oCamList = []
             @ccam = null # current Camera
 
-            self = this
+            @setCurrent @newOrthoCam()
+
             InputMixer.decorate canvas # add following events
-            @canvas.addEventListener 'zoom', (e) -> self.zoomP e.detail
-            @canvas.addEventListener 'rotate', (e) -> self.rotateP e.detail
-            @canvas.addEventListener 'pan', (e) ->
-                self.panP e.detail.deltaX, e.detail.deltaY
-            @canvas.addEventListener 'cam', (e) -> self.switchCam e.detail
+            @canvas.addEventListener 'zoom',(e)=> @zoomP e.detail
+            @canvas.addEventListener 'rotate',(e)=> @rotateP e.detail
+            @canvas.addEventListener 'pan',(e)=>
+                @panP e.detail.deltaX, e.detail.deltaY
+            @canvas.addEventListener 'cam',(e)=> @switchCam e.detail
+
+            @rulers = new THREE.Object3D
+            r = new Ruler
+            hourInDay = 24
+            r.addScale 'day', hourInDay, 'x', 'red'
+            r.addScale 'hour', 1 , 'x', 'yellow'
+            @rulers.add r
+            @ccam.add @rulers
+            @updateRulers()
+            return
 
         # helper
         ccw: -> @canvas.clientWidth
         cch: -> @canvas.clientHeight
-        p2c: (pix) -> pix * @ccam.r / @ccam.zoom
+        p2c: (pix)-> pix * @ccam.r / @ccam.zoom # pixel to coord
+        c2w: (v3)-> v3.clone().applyMatrix4 @ccam.matrixWorld
+
+        updateRuler : (r) ->
+            rLength = @p2c @ccw()
+            rPosY = @p2c -0.45 * @cch()
+            r.rA.copy new V3(-rLength/2,rPosY,0)
+            r.rB.copy new V3( rLength/2,rPosY,0)
+            r.width = @p2c 0.05 * @cch()
+            z = new V3 0,0,-1
+            v = z.clone().applyQuaternion @ccam.quaternion
+            r.ratioW2R = Math.cos(v.angleTo z)
+            r.wA = @c2w r.rA
+
+        updateRulers: ()->
+            @rulers.children.map (r)=>
+                @updateRuler r
+                r.reDraw()
+            @emit 'touched'
 
         zoom: (z) ->
-            @ccam.zoom = z if z > 0
-            @ccam.updateProjectionMatrix()
-            @emit 'zoom', @ccam.zoom
-            @emit 'touched'
+            if z > 0
+                @ccam.zoom = z
+                # @ccam.updateProjectionMatrix()
+                @updateRulers()
+                @emit 'zoom', @ccam.zoom
 
         zoomP: (p) -> # p in pixcel
             speed = 0.01
@@ -39,7 +70,7 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             )
             @ccam.position.copy v.add @ccam.tgt
             @ccam.lookAt @ccam.tgt
-            @emit 'touched'
+            @updateRulers()
 
         pos: () -> @ccam.position.clone()
 
@@ -47,7 +78,7 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             v = @ccam.tgt.clone().sub @ccam.position
             @ccam.position.copy p
             @ccam.tgt.copy v.add @ccam.position
-            @emit 'touched'
+            @updateRulers()
 
         panP: (px,py)->
             camUp = new THREE.Vector3 0,1,0
@@ -56,7 +87,7 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             @ccam.translateOnAxis(camRight, - @p2c px)
             @ccam.translateOnAxis(camUp, @p2c py)
             @ccam.tgt.copy v.add @ccam.position
-            @emit 'touched'
+            @updateRulers()
 
         regCamera: (camera)->
             @cameraList.push camera
@@ -118,7 +149,7 @@ define ['InputMixer','lib/EventEmitter'], (InputMixer,EventEmitter) ->
             if @ccam instanceof THREE.PerspectiveCamera
                 @ccam.position.set ((min + max)/2),0,20
             @emit 'zoom', @ccam.zoom
-            @emit 'touched'
+            @updateRulers()
 
         newOrthoCam: ()->
             oCam = new THREE.OrthographicCamera 0,1,0,1, 0, 100

@@ -1,4 +1,4 @@
-require ['log','Axis','Compass','Cube','WebPage','Label','InputMixer','DataGroup','CameraController'], (log, Axis, Compass, Cube, WebPage, Label, InputMixer, DataGroup, CameraController) ->
+require ['log','Axis','Compass','Ruler','Cube','WebPage','Label','InputMixer','DataGroup','CameraController'], (log, Axis, Compass, Ruler, Cube, WebPage, Label, InputMixer, DataGroup, CameraController) ->
     canvas = null
     scene = null
 
@@ -13,6 +13,7 @@ require ['log','Axis','Compass','Cube','WebPage','Label','InputMixer','DataGroup
     mixerActions = []   # animation actions list
 
     # helper
+    V3 = THREE.Vector3
     ccw = -> canvas.clientWidth
     cch = -> canvas.clientHeight
     $ = (id) -> return document.getElementById id
@@ -78,7 +79,6 @@ require ['log','Axis','Compass','Cube','WebPage','Label','InputMixer','DataGroup
 
         # Camera
         cameraCtl = new CameraController canvas
-        cameraCtl.setCurrent cameraCtl.newOrthoCam()
         cameraCtl.on 'touched', render
 
         # Viewport
@@ -206,10 +206,10 @@ require ['log','Axis','Compass','Cube','WebPage','Label','InputMixer','DataGroup
             do (a) ->
                 mixerActions.push mixer.clipAction(a).play()
 
-        scene.add( new Compass )
-        scene.add( new Cube 0.2,0.2,0.2)
-
         init()
+
+        scene.add cameraCtl.currentCam()
+        scene.add( new Compass )
 
         watchHistory scene
 
