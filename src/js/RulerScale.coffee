@@ -12,20 +12,19 @@ define ['Line','Label'],(Line,Label) ->
             return
         
         drawOnRuler: (r)->
-            dA = r.wA[@coordName] # data A vlue
-            dS = @unit * Math.ceil (dA / @unit) # data Start value
-            rVec = r.rB.clone().sub(r.rA)
-            rLen = rVec.length()
-            dLen = rLen * r.ratioW2R
-            times = Math.floor(( dLen - (dS-dA)) / @unit) + 1
+            vA = r.dA[@coordName] # value at data point A
+            vB = r.dB[@coordName]
+            vLen = vB - vA # TODO abs ?
+            if vLen = 0 then return
+            vS = @unit * Math.ceil (vA / @unit) # data Start value
+            times = Math.floor(( vLen - (vS-vA)) / @unit) + 1
             if times > @limitTimes then return
 
-            v = rVec.clone().setLength(1)
-            rS = r.rA.clone().addScaledVector(v,(dS-dA)/dLen)
-            rUnit = @unit / r.ratio
-
-            console.log 'dA',dA,'dS',dS
-            console.log 'r.ratio',r.ratio,'rLen',rLen, 'dLen', dLen, 'times', times
+            rVec = r.rB.clone().sub(r.rA)
+            rLen = rVec.length()
+            v = rVec.clone().setLength 1
+            rS = r.rA.clone().addScaledVector(v, (vS-vA)/vLen)
+            rUnit = @unit * (rLen / vLen)
             [0...times].map (i)=>
                 a = rS.clone().addScaledVector(v, i * rUnit)
                 b = a.clone().add new V3(0, -r.width/2, 0)

@@ -26,6 +26,8 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','Label','InputMixer','D
     historyGroup = null
     msInHour = 1000 * 3600
 
+    compass = null
+
     # HUD on canvas
     hud = null
     class HUD
@@ -209,7 +211,8 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','Label','InputMixer','D
         init()
 
         scene.add cameraCtl.currentCam()
-        scene.add( new Compass )
+        compass = new Compass
+        scene.add(compass)
 
         watchHistory scene
 

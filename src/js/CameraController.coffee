@@ -13,15 +13,14 @@ define ['Ruler','InputMixer','lib/EventEmitter'],(Ruler,InputMixer,EventEmitter)
 
             InputMixer.decorate canvas # add following events
             @canvas.addEventListener 'zoom',(e)=> @zoomP e.detail
-            @canvas.addEventListener 'rotate',(e)=> @rotateP e.detail
+            @canvas.addEventListener 'rotate',(e)=>@rotateP e.detail
             @canvas.addEventListener 'pan',(e)=>
                 @panP e.detail.deltaX, e.detail.deltaY
             @canvas.addEventListener 'cam',(e)=> @switchCam e.detail
 
             @rulers = new THREE.Object3D
-            r = new Ruler
             hourInDay = 24
-            r.addScale 'day', hourInDay, 'x', 'red'
+            r = new Ruler
             r.addScale 'hour', 1 , 'x', 'yellow'
             @rulers.add r
             @ccam.add @rulers
@@ -31,24 +30,28 @@ define ['Ruler','InputMixer','lib/EventEmitter'],(Ruler,InputMixer,EventEmitter)
         # helper
         ccw: -> @canvas.clientWidth
         cch: -> @canvas.clientHeight
-        p2c: (pix)-> pix * @ccam.r / @ccam.zoom # pixel to coord
-        c2w: (v3)-> v3.clone().applyMatrix4 @ccam.matrixWorld
+        # pixel to coord, for mouse input
+        p2c: (pix)-> pix * @ccam.r / @ccam.zoom
 
         updateRuler : (r) ->
-            rLength = @p2c @ccw()
-            rPosY = @p2c -0.45 * @cch()
-            r.rA.copy new V3(-rLength/2,rPosY,0)
-            r.rB.copy new V3( rLength/2,rPosY,0)
-            r.width = @p2c 0.05 * @cch()
-            z = new V3 0,0,-1
-            v = z.clone().applyQuaternion @ccam.quaternion
-            r.ratioW2R = Math.cos(v.angleTo z)
-            r.wA = @c2w r.rA
+            rLength = @ccw()
+            rPosY = -0.45 * @cch()
+            r.rA = new V3(-rLength/2,rPosY,0)
+            r.rB = new V3( rLength/2,rPosY,0)
+            r.rWidth = 0.05 * @cch()
+            # r.dA, r.dB ( TODO consider angle in future )
+            r.dA = r.localToWorld r.rA
+            r.dB = r.localToWorld r.rB
+            # r.scale
+            v = new THREE.Vector3 1,1,1
+            v.multiplyScalar @ccam.r / @ccam.zoom
+            r.scale.copy v
 
         updateRulers: ()->
-            @rulers.children.map (r)=>
-                @updateRuler r
-                r.reDraw()
+            for r in @rulers.children
+                do (r) =>
+                    @updateRuler r
+                    r.reDraw()
             @emit 'touched'
 
         zoom: (z) ->

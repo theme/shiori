@@ -3,18 +3,15 @@ define ['RulerScale','Line'],(RulerScale,Line) ->
     class Ruler extends THREE.Object3D
         constructor: (rA =new V3, rB =new V3, width =5, color='yellow')->
             super
-
-            # on lens, coordinate in camera space
+            # ruler's 2 ends in camera space (A -> B)
             @rA = rA
             @rB = rB
             @width = width
             @color = color
             @scales = []
-
-            # world space
-            @ratio = 1 # Math.cos( 0 )
-            @wA = new THREE.Vector3
-
+            # corresponding data ranges's 2 value: [A, B]
+            @dA = rA
+            @dB = rB
             return
 
         len: ()-> @rB.clone().sub(@rA).length()
@@ -26,13 +23,15 @@ define ['RulerScale','Line'],(RulerScale,Line) ->
         drawBody: ()->
             f = @rA
             t = @rB
-            @add new Line f.x,f.y,f.z,t.x,t.y,t.z,@color
+            line = new Line f.x,f.y,f.z,t.x,t.y,t.z,@color
+            @add line
 
         drawScales: ()->
             @scales.map (s)=> s.drawOnRuler @
 
         reDraw: ()->
-            @children.map (i)=> @remove i
+            for i in @children
+                do (i) => @remove i
             @drawBody()
             @drawScales()
             return
