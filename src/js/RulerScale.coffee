@@ -28,7 +28,7 @@ define ['Line','Label'],(Line,Label) ->
             wS[@coordName] = wSc
 
             rS = wS.clone()
-            r.localToWorld rS
+            r.worldToLocal rS
 
             wB = r.rB.clone()
             r.localToWorld wB
