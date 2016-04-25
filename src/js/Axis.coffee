@@ -17,7 +17,7 @@ define ['Line'], (Line) ->
             @scaleRatio = @length / @rangeLength
 
             # axis line
-            line = new Line a.x,a.y,a.z,b.x,b.y,b.z,@color
+            line = new Line a,b,@color
             @.add(line)
             # arraow and marks
             arrowGeo = new THREE.CylinderGeometry(0, 1, 5, 8, 8)

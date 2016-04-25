@@ -1,20 +1,29 @@
-define () ->
+define ['lib/EventEmitter'], (EventEmitter) ->
     class DataGroup extends THREE.Object3D
         constructor: () ->
             super
+            @event = new EventEmitter
 
-        rangeOf: (cmin, cmax, getAttr) ->
+        setVisible: (f = true)->
+            if @visible == f or undefined == f then return
+            @visible = f
+            for c in @children
+                do (c) -> c.visible = f
+            @event.emit 'visible',f
+
+        toggleVisible: ()->
+            if @visible then @setVisible false
+            else @setVisible true
+
+        rangeOf: (corr) ->
             arr = @children
-            arr.sort (a,b)-> getAttr(a) - getAttr(b)
             if arr.length > 0
-                m = getAttr arr[0]
-                x = getAttr arr[arr.length-1]
-                if m < cmin then cmin = m
-                if cmax < x then cmax = x
+                arr.sort (a,b)-> a.position[corr]-b.position[corr]
+                cmin = arr[0].position[corr]
+                cmax = arr[arr.length-1].position[corr]
+                return [cmin,cmax]
             else
-                tmp = cmin
-                cmin = cmax
-                cmax = tmp
-            return [cmin,cmax]
+                return [0,10]
 
     return DataGroup
+

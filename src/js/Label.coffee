@@ -24,7 +24,8 @@ define () ->
             else @div.classList.add 'notvisible'
             return
 
-        updatePos: (camera, renderer)->
+        # TODO: update & remove Label
+        updatePos: (camera, renderer)-> #TODO this means bad design
             if not @parent?
                 @setVisible false
                 return
@@ -54,3 +55,4 @@ define () ->
             return
 
     return Label
+

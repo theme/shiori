@@ -1,3 +1,4 @@
+bower_components/
 node_modules/
 doc/
 pub/
@@ -18,3 +19,4 @@ pub/
 # symbol table files
 **tags
 **.log
+
