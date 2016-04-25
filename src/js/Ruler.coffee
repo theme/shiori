@@ -14,8 +14,8 @@ define ['RulerScale','Line'],(RulerScale,Line) ->
 
         len: ()-> @rB.clone().sub(@rA).length()
 
-        addScale: (name, unit, coordName, color)->
-            @scales.push new RulerScale(name,unit,coordName,color)
+        addScale: (name, wUnit, coordName, color)->
+            @scales.push new RulerScale(name,wUnit,coordName,color)
             return
 
         drawBody: ()->
