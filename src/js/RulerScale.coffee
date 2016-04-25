@@ -28,7 +28,7 @@ define ['Line','Label'],(Line,Label) ->
             [0...times].map (i)=>
                 a = rS.clone().addScaledVector(v, i * rUnit)
                 b = a.clone().add new V3(0, -r.width/2, 0)
-                line = new Line a.x,a.y,a.z,b.x,b.y,b.z,@color
+                line = new Line a,b,@color
                 r.add line
             return
 

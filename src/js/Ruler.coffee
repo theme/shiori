@@ -12,6 +12,7 @@ define ['RulerScale','Line'],(RulerScale,Line) ->
             # corresponding data ranges's 2 value: [A, B]
             @dA = rA
             @dB = rB
+
             return
 
         len: ()-> @rB.clone().sub(@rA).length()
@@ -21,10 +22,8 @@ define ['RulerScale','Line'],(RulerScale,Line) ->
             return
 
         drawBody: ()->
-            f = @rA
-            t = @rB
-            line = new Line f.x,f.y,f.z,t.x,t.y,t.z,@color
-            @add line
+            @line = new Line @rA,@rB,@color
+            @add @line
 
         drawScales: ()->
             @scales.map (s)=> s.drawOnRuler @

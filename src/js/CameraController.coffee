@@ -1,4 +1,4 @@
-define ['Ruler','InputMixer','lib/EventEmitter'],(Ruler,InputMixer,EventEmitter)->
+define ['Cube','Ruler','InputMixer','lib/EventEmitter'],(Cube,Ruler,InputMixer,EventEmitter)->
     V3 = THREE.Vector3
     class CameraController extends EventEmitter
         constructor: (canvas)->
@@ -19,11 +19,12 @@ define ['Ruler','InputMixer','lib/EventEmitter'],(Ruler,InputMixer,EventEmitter)
             @canvas.addEventListener 'cam',(e)=> @switchCam e.detail
 
             @rulers = new THREE.Object3D
+            @ccam.add @rulers
+
             hourInDay = 24
             r = new Ruler
             r.addScale 'hour', 1 , 'x', 'yellow'
             @rulers.add r
-            @ccam.add @rulers
             @updateRulers()
             return
 
@@ -31,21 +32,23 @@ define ['Ruler','InputMixer','lib/EventEmitter'],(Ruler,InputMixer,EventEmitter)
         ccw: -> @canvas.clientWidth
         cch: -> @canvas.clientHeight
         # pixel to coord, for mouse input
-        p2c: (pix)-> pix * @ccam.r / @ccam.zoom
+        p2c: (pix)-> pix / @ccam.zoom
 
         updateRuler : (r) ->
+            # r: local position
             rLength = @ccw()
-            rPosY = -0.45 * @cch()
-            r.rA = new V3(-rLength/2,rPosY,0)
-            r.rB = new V3( rLength/2,rPosY,0)
-            r.rWidth = 0.05 * @cch()
+            r.position.z = -5 # in front of camera
+            # r
+            bPosY = -0.45 * @cch()
+            r.rA.copy new V3(-rLength/2,bPosY,0)
+            r.rB.copy new V3( rLength/2,bPosY,0)
+            r.width = 0.05 * @cch()
             # r.dA, r.dB ( TODO consider angle in future )
-            r.dA = r.localToWorld r.rA
-            r.dB = r.localToWorld r.rB
+            r.dA = r.localToWorld r.rA.clone()
+            r.dB = r.localToWorld r.rB.clone()
             # r.scale
-            v = new THREE.Vector3 1,1,1
-            v.multiplyScalar @ccam.r / @ccam.zoom
-            r.scale.copy v
+            r.scale.x = 1 / @ccam.zoom
+            r.scale.y = 1 / @ccam.zoom
 
         updateRulers: ()->
             for r in @rulers.children
@@ -57,7 +60,6 @@ define ['Ruler','InputMixer','lib/EventEmitter'],(Ruler,InputMixer,EventEmitter)
         zoom: (z) ->
             if z > 0
                 @ccam.zoom = z
-                # @ccam.updateProjectionMatrix()
                 @updateRulers()
                 @emit 'zoom', @ccam.zoom
 
@@ -133,10 +135,10 @@ define ['Ruler','InputMixer','lib/EventEmitter'],(Ruler,InputMixer,EventEmitter)
 
         update: (c)->
             if c instanceof THREE.OrthographicCamera
-                c.left   = - @ccw()*c.r /2
-                c.right  = + @ccw()*c.r /2
-                c.top    = + @cch()*c.r /2
-                c.bottom = - @cch()*c.r /2
+                c.left   = - @ccw()/2
+                c.right  = + @ccw()/2
+                c.top    = + @cch()/2
+                c.bottom = - @cch()/2
                 c.updateProjectionMatrix()
             if c instanceof THREE.PerspectiveCamera
                 c.aspect = @ccw()/@cch()
@@ -155,18 +157,17 @@ define ['Ruler','InputMixer','lib/EventEmitter'],(Ruler,InputMixer,EventEmitter)
             @updateRulers()
 
         newOrthoCam: ()->
-            oCam = new THREE.OrthographicCamera 0,1,0,1, 0, 100
+            oCam = new THREE.OrthographicCamera 0,1,0,1, 0, 1000
             oCam.tgt = new THREE.Vector3
-            oCam.r = 25/@cch()
             oCam.position.set 0,0,20
             oCam.lookAt oCam.tgt
+            oCam.zoom = @cch() / 25 # set a init zoom level
             @update oCam
             @regCamera oCam
             return oCam
 
         newPersCam: ()->
             pCam = new THREE.PerspectiveCamera 75, @ccw()/@cch(),1,100
-            pCam.r = 25/@cch()
             pCam.tgt = new THREE.Vector3
             pCam.position.set 0,0,20
             pCam.lookAt pCam.tgt
