@@ -9,9 +9,6 @@ define ['RulerScale','Line'],(RulerScale,Line) ->
             @width = width
             @color = color
             @scales = []
-            # corresponding data ranges's 2 value: [A, B]
-            @dA = rA
-            @dB = rB
 
             return
 

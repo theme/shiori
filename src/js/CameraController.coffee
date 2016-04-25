@@ -43,9 +43,6 @@ define ['Cube','Ruler','InputMixer','lib/EventEmitter'],(Cube,Ruler,InputMixer,E
             r.rA.copy new V3(-rLength/2,bPosY,0)
             r.rB.copy new V3( rLength/2,bPosY,0)
             r.width = 0.05 * @cch()
-            # r.dA, r.dB ( TODO consider angle in future )
-            r.dA = r.localToWorld r.rA.clone()
-            r.dB = r.localToWorld r.rB.clone()
             # r.scale
             r.scale.x = 1 / @ccam.zoom
             r.scale.y = 1 / @ccam.zoom
