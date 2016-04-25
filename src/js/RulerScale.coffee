@@ -12,7 +12,7 @@ define ['Line','Label'],(Line,Label) ->
         
         drawOnRuler: (r)->
             # wA---(Offset)--wS---wB : points in world space
-            # rA             rS   rB : points in ruler local space
+            # rA-------------rS---rB : points in ruler local space
             #                ||||||| : drawings of ruler scales
             #                 (rSi) 
             # 
