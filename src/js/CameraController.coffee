@@ -21,9 +21,8 @@ define ['Cube','Ruler','InputMixer','lib/EventEmitter'],(Cube,Ruler,InputMixer,E
             @rulers = new THREE.Object3D
             @ccam.add @rulers
 
-            hourInDay = 24
             r = new Ruler
-            r.addScale 'hour', 1 , 'x', 'yellow'
+            r.addScale 'day', 24, 'x', 'yellow'
             @rulers.add r
             @updateRulers()
             return

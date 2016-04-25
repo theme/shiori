@@ -6,7 +6,7 @@ define ['Line','Label'],(Line,Label) ->
             @name = name
             @wUnit = wUnit # coordinate unit to draw scale
             @coordName = coordName
-            @limitTimes = 50
+            @limitTimes = 30
             @color = color
             return
         
@@ -33,14 +33,16 @@ define ['Line','Label'],(Line,Label) ->
             wB = r.rB.clone()
             r.localToWorld wB
             wSB = wS.distanceTo wB
-            n = wSB / @wUnit
+            n = Math.ceil( wSB / @wUnit )
             if n > @limitTimes then return
 
-            rvSB = r.rB.clone().sub rS
+            rSB = rS.distanceTo r.rB
+            rUnit = @wUnit * rSB / wSB
+            v = r.rB.clone().sub(rS).setLength rUnit
             
             for i in [0...n]
                 do (i)=>
-                    a = rS.clone().addScaledVector(rvSB, i / n)
+                    a = v.clone().multiplyScalar(i).add rS
                     b = a.clone().add new V3(0, -r.width/2, 0)
                     line = new Line a,b,@color
                     r.add line
