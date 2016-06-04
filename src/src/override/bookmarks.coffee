@@ -25,6 +25,7 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','Label','InputMixer','D
     bookmarksGroup = null
     historyGroup = null
     msInHour = 1000 * 3600
+    msInDay = msInHour * 24
 
     compass = null
 
@@ -135,22 +136,26 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','Label','InputMixer','D
         return
 
     # watch chrome history
+    addHistoryPoint = (url, title, lastVisitTime) ->
+        p = new WebPage(url, title, lastVisitTime)
+        p.translateX p.atime/msInHour
+        p.translateY (12 - ((p.atime % msInDay)/msInHour))
+        log p.position.y, p.title, p.url
+        historyGroup.add p
+        return p
+
     watchHistory = (scene) ->
         chrome.history.onVisited.addListener (hi)->
-            p = new WebPage(hi.url,hi.title, hi.lastVisitTime)
-            p.translateX p.atime/msInHour
+            p = addHistoryPoint(hi.url,hi.title,hi.lastVisitTime)
             log 'history onVisited',p.id,p.url
-            historyGroup.add(p)
             historyGroup.event.emit 'added'
 
     loadHistory = (scene) ->
-        chrome.history.search {text:'',maxResults:1000},(a)->
+        chrome.history.search {text:'',maxResults:2000},(a)->
             log a.length,'history record(s)'
             for hi in a
                 do (hi) ->
-                    p = new WebPage(hi.url,hi.title,hi.lastVisitTime)
-                    p.translateX p.atime/msInHour
-                    historyGroup.add p
+                    addHistoryPoint(hi.url,hi.title,hi.lastVisitTime)
             [cmin,cmax] = historyGroup.rangeOf 'x'
             cameraCtl.lookAtRange cmin,cmax
             scene.add historyGroup
@@ -158,6 +163,7 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','Label','InputMixer','D
             return
         return
 
+    # bookmarks
     loadBookmarks = (scene)->
         bmCount = 0
         chrome.bookmarks.getTree (bmlist)->
@@ -165,6 +171,8 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','Label','InputMixer','D
                 bmCount += 1
                 p = new WebPage n.url,n.title,n.dateAdded
                 p.translateX p.atime/msInHour
+                p.translateY (12 - ((p.atime % msInDay)/msInHour))
+                log p.position.y
                 bookmarksGroup.add p
                 return
             traverseTree = (bmlist, callback)-> # define

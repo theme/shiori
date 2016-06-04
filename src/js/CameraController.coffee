@@ -22,7 +22,7 @@ define ['Cube','Ruler','InputMixer','lib/EventEmitter'],(Cube,Ruler,InputMixer,E
             @ccam.add @rulers
 
             r = new Ruler
-            r.addScale 'day', 24, 'x', 'yellow'
+            r.addScale 'day', 24, 'x', 'green'
             @rulers.add r
             @updateRulers()
             return
@@ -38,10 +38,12 @@ define ['Cube','Ruler','InputMixer','lib/EventEmitter'],(Cube,Ruler,InputMixer,E
             rLength = @ccw()
             r.position.z = -5 # in front of camera
             # r
-            bPosY = -0.45 * @cch()
+            # bPosY = -0.45 * @cch()
+            bPosY = 0
             r.rA.copy new V3(-rLength/2,bPosY,0)
             r.rB.copy new V3( rLength/2,bPosY,0)
-            r.width = 0.05 * @cch()
+            # r.width = 0.05 * @cch()
+            r.width = 0.5 * @cch()
             # r.scale
             r.scale.x = 1 / @ccam.zoom
             r.scale.y = 1 / @ccam.zoom

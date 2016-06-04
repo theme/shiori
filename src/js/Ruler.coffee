@@ -1,7 +1,7 @@
 define ['RulerScale','Line'],(RulerScale,Line) ->
     V3 = THREE.Vector3
     class Ruler extends THREE.Object3D
-        constructor: (rA =new V3, rB =new V3, width =5, color='yellow')->
+        constructor: (rA =new V3, rB =new V3, width =5, color='green')->
             super
             # ruler's 2 ends in camera space (A -> B)
             @rA = rA
