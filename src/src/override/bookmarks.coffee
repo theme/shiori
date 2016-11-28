@@ -1,4 +1,4 @@
-require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup','CameraController'], (log, Axis, Compass, Ruler, Cube, WebPage, InputMixer, DataGroup, CameraController) ->
+require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup','CameraController','Model','Labeling'], (log, Axis, Compass, Ruler, Cube, WebPage, InputMixer, DataGroup, CameraController, Model, Labeling) ->
     canvas = null
     scene = null
 
@@ -22,8 +22,6 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
     labelroot = $('labelroot')
 
     # contents
-    bookmarksGroup = null
-    historyGroup = null
     msInHour = 1000 * 3600
     msInDay = msInHour * 24
 
@@ -97,16 +95,16 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
             hud.camY = cameraCtl.currentCam().position.y
 
         # Contents
-        historyGroup = new DataGroup
-        historyGroup.loaded = false
-        historyGroup.event.on 'loaded',render
-        historyGroup.event.on 'visible',render
-        historyGroup.event.on 'added', ()->
-            render() if historyGroup.visible
-        bookmarksGroup = new DataGroup
-        bookmarksGroup.loaded = false
-        bookmarksGroup.event.on 'loaded',render
-        bookmarksGroup.event.on 'visible',render
+        Model.historyGroup = new DataGroup
+        Model.historyGroup.loaded = false
+        Model.historyGroup.event.on 'loaded',render
+        Model.historyGroup.event.on 'visible',render
+        Model.historyGroup.event.on 'added', ()->
+            render() if Model.historyGroup.visible
+        Model.bookmarksGroup = new DataGroup
+        Model.bookmarksGroup.loaded = false
+        Model.bookmarksGroup.event.on 'loaded',render
+        Model.bookmarksGroup.event.on 'visible',render
 
         return
 
@@ -127,14 +125,24 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
         cameraCtl.update()
 
         $('labelcontainer').removeChild labelroot  # to reduce re-flow
-
         # scene.traverse (obj) -> obj.update?(cameraCtl.currentCam(), renderer)
 
-
         # updateAnimations()
+
+        # before render
+        Model.renderedLabels = []
+        
+        # do render
         renderer.render(scene, cameraCtl.currentCam())
 
+        # after render
+        # do labeling
+        Labeling.canvasCenterLabels(
+            Model.renderedLabels, Model.allLabels, renderer, cameraCtl.currentCam())
+
+        # clear flags
         $('labelcontainer').appendChild labelroot
+
         return
 
     # watch chrome history
@@ -143,14 +151,14 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
         p.translateX p.atime/msInHour
         p.translateY (12 - ((p.atime % msInDay)/msInHour))
         # log p.position.y, p.title, p.url
-        historyGroup.add p
+        Model.historyGroup.add p
         return p
 
     watchHistory = (scene) ->
         chrome.history.onVisited.addListener (hi)->
             p = addHistoryPoint(hi.url,hi.title,hi.lastVisitTime)
             log 'history onVisited',p.id,p.url
-            historyGroup.event.emit 'added'
+            Model.historyGroup.event.emit 'added'
 
     loadHistory = (scene) ->
         chrome.history.search {text:'',maxResults:2000},(a)->
@@ -158,10 +166,11 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
             for hi in a
                 do (hi) ->
                     addHistoryPoint(hi.url,hi.title,hi.lastVisitTime)
-            [cmin,cmax] = historyGroup.rangeOf 'x'
+            [cmin,cmax] = Model.historyGroup.rangeOf 'x'
             cameraCtl.lookAtRange cmin,cmax
-            scene.add historyGroup
-            historyGroup.event.emit 'loaded'
+            scene.add Model.historyGroup
+            Model.historyGroup.loaded = true
+            Model.historyGroup.event.emit 'loaded'
             return
         return
 
@@ -175,7 +184,7 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
                 p.translateX p.atime/msInHour
                 p.translateY (12 - ((p.atime % msInDay)/msInHour))
                 # log p.position.y
-                bookmarksGroup.add p
+                Model.bookmarksGroup.add p
                 return
             traverseTree = (bmlist, callback)-> # define
                 for bm in bmlist
@@ -187,24 +196,24 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
 
             traverseTree bmlist,addBmNode
             log bmCount,'bookmarks'
-            [cmin,cmax] = bookmarksGroup.rangeOf 'x'
+            [cmin,cmax] = Model.bookmarksGroup.rangeOf 'x'
             cameraCtl.lookAtRange cmin,cmax
-            scene.add bookmarksGroup
-            bookmarksGroup.loaded = true
-            bookmarksGroup.event.emit 'loaded'
+            scene.add Model.bookmarksGroup
+            Model.bookmarksGroup.loaded = true
+            Model.bookmarksGroup.event.emit 'loaded'
             return
         return
 
     watchToggles = () ->
         $('check-history').addEventListener 'change', (e)->
-            if not historyGroup.loaded
+            if not Model.historyGroup.loaded
                 loadHistory scene
-            historyGroup.setVisible e.target?.checked
+            Model.historyGroup.setVisible e.target?.checked
             return
         $('check-bookmarks').addEventListener 'change', (e)->
-            if not bookmarksGroup.loaded
+            if not Model.bookmarksGroup.loaded
                 loadBookmarks scene
-            bookmarksGroup.setVisible e.target?.checked
+            Model.bookmarksGroup.setVisible e.target?.checked
             return
 
     # load scene & start render

@@ -1,31 +1,18 @@
-define ['log', 'Cube'],(log, Cube) ->
-    # singleton container
-    allLabels = []
+define ['log', 'Model'],(log, Model) ->
+
     labelRootEl = document.getElementById('labelroot')
-    dummyGeometry = new THREE.Geometry
 
-    class Label extends THREE.Points # in order to use onBeforeRender
+    class Label extends THREE.Object3D
         constructor: (txt)->
-            @geometry = dummyGeometry
-            super @geometry
+            super
             @text = txt
-            @makeDOMdiv()
-            @onAfterRender = (renderer, scene, camera, geometry, material, group)=>
-                log "Label::onAfterRender"
-                if not @div? then @makeDOMdiv()
-                @updateDivPos camera, renderer
-                if not @visible then @setDivVisible false
+            Model.allLabels.push @
 
-        makeDOMdiv: ->
-            if @div?
-                return
-            log "Label::makeDOMdiv"
             @div = document.createElement 'div'
             labelRootEl.appendChild @div
             @div.innerHTML = @text
             @div.classList.add 'label'
-            # @div.classList.add 'notvisible'
-            allLabels.push @
+            @div.classList.add 'notvisible'
             return
 
         setDivVisible: (y)->
@@ -66,7 +53,6 @@ define ['log', 'Cube'],(log, Cube) ->
             # if not @visible then @setDivVisible false
             # else @setDivVisible @isOnScreen camera, renderer
             return
-
 
     return Label
 
