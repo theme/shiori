@@ -173,7 +173,7 @@ but in my case, @div may not be defined
 1. "Paste" label on to DataPoint, make `Label` a child object, hook `Label::updateDivPos` to objec3d's call back `onAfterRender`.
 2. Separate label from data points.  Let three.js render scene, after that, do labeling algorithm. ( This will need a clear ADT=Abstract Data Type be designed firstly)
 
-TODO: a patch to 1, hook `need Lable` to `WebPage extends DataPoint`, then do a labeling algorithm on them. ( assume `WebPage` as ADT )
+DONE: a patch to 1, hook `need Lable` to `WebPage extends DataPoint`, then do a labeling algorithm on them. ( assume `WebPage` as ADT )
 
 algo) reduce visible labels: Let distance to canvas center as the weight of label
 
