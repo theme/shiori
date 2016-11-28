@@ -1,33 +1,45 @@
-define () ->
+define ['log', 'Cube'],(log, Cube) ->
     # singleton container
     allLabels = []
     labelRootEl = document.getElementById('labelroot')
-    if not labelRootEl
-        labelRootEl = document.createElement 'div'
-        labelRootEl.id = 'labelroot'
-        document.body.appendChild labelRootEl
+    dummyGeometry = new THREE.Geometry
 
-    class Label extends THREE.Object3D
+    class Label extends THREE.Points # in order to use onBeforeRender
         constructor: (txt)->
-            super
+            @geometry = dummyGeometry
+            super @geometry
             @text = txt
+            @makeDOMdiv()
+            @onAfterRender = (renderer, scene, camera, geometry, material, group)=>
+                log "Label::onAfterRender"
+                if not @div? then @makeDOMdiv()
+                @updateDivPos camera, renderer
+                if not @visible then @setDivVisible false
+
+        makeDOMdiv: ->
+            if @div?
+                return
+            log "Label::makeDOMdiv"
             @div = document.createElement 'div'
             labelRootEl.appendChild @div
             @div.innerHTML = @text
             @div.classList.add 'label'
-            @div.classList.add 'notvisible'
+            # @div.classList.add 'notvisible'
             allLabels.push @
             return
 
-        setVisible: (y)->
-            if y then @div.classList.remove 'notvisible'
-            else @div.classList.add 'notvisible'
+        setDivVisible: (y)->
+            if y
+                @div.classList.remove 'notvisible'
+            else
+                @div.classList.add 'notvisible'
             return
 
         # TODO: update & remove Label
-        updatePos: (camera, renderer)-> #TODO this means bad design
-            if not @parent?
-                @setVisible false
+        updateDivPos: (camera, renderer)-> #TODO this means bad design
+            log "Label::updateDivPos"
+            if @parent == undefined
+                @setDivVisible false
                 return
             pos = @parent.position.clone()
             rect = renderer.domElement.getBoundingClientRect()
@@ -45,14 +57,16 @@ define () ->
             return
 
         isOnScreen: (camera, renderer)->
+            log "Label::isOnScreen"
             rect = renderer.domElement.getBoundingClientRect()
             return (rect.left < @sX < rect.right) and (rect.top < @sY <rect.bottom)
 
         update: (camera, renderer)->
-            @updatePos camera, renderer
-            if not @visible then @setVisible false
-            else @setVisible @isOnScreen camera, renderer
+            log "Label::update"
+            # if not @visible then @setDivVisible false
+            # else @setDivVisible @isOnScreen camera, renderer
             return
+
 
     return Label
 

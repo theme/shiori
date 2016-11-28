@@ -54,7 +54,8 @@ module.exports = function(grunt) {
                     'src/**/*.json',
                     'src/**/*.html',
                     'src/**/*.js',
-                    'src/**/*.css'
+                    'src/**/*.css',
+                    'src/**/*.md'
                 ],
                 tasks: ['sync'],
                 options: { spawn: false, interrupt: true, debounceDelay: 250, event: ['changed'] //changed, added, deleted, all

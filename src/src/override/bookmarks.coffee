@@ -1,4 +1,4 @@
-require ['log','Axis','Compass','Ruler','Cube','WebPage','Label','InputMixer','DataGroup','CameraController'], (log, Axis, Compass, Ruler, Cube, WebPage, Label, InputMixer, DataGroup, CameraController) ->
+require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup','CameraController'], (log, Axis, Compass, Ruler, Cube, WebPage, InputMixer, DataGroup, CameraController) ->
     canvas = null
     scene = null
 
@@ -126,13 +126,15 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','Label','InputMixer','D
         if not f then return
         cameraCtl.update()
 
-        $('main').removeChild labelroot  # reduce re-flow times
-        scene.traverse (obj) -> obj.update?(cameraCtl.currentCam(), renderer)
-        $('main').appendChild labelroot
+        $('labelcontainer').removeChild labelroot  # to reduce re-flow
+
+        # scene.traverse (obj) -> obj.update?(cameraCtl.currentCam(), renderer)
+
 
         # updateAnimations()
-
         renderer.render(scene, cameraCtl.currentCam())
+
+        $('labelcontainer').appendChild labelroot
         return
 
     # watch chrome history
@@ -140,7 +142,7 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','Label','InputMixer','D
         p = new WebPage(url, title, lastVisitTime)
         p.translateX p.atime/msInHour
         p.translateY (12 - ((p.atime % msInDay)/msInHour))
-        log p.position.y, p.title, p.url
+        # log p.position.y, p.title, p.url
         historyGroup.add p
         return p
 
@@ -172,7 +174,7 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','Label','InputMixer','D
                 p = new WebPage n.url,n.title,n.dateAdded
                 p.translateX p.atime/msInHour
                 p.translateY (12 - ((p.atime % msInDay)/msInHour))
-                log p.position.y
+                # log p.position.y
                 bookmarksGroup.add p
                 return
             traverseTree = (bmlist, callback)-> # define

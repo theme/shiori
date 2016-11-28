@@ -23,7 +23,7 @@ define ['lib/EventEmitter'], (EventEmitter) ->
                 cmax = arr[arr.length-1].position[corr]
                 return [cmin,cmax]
             else
-                return [0,10]
+                return null
 
     return DataGroup
 
