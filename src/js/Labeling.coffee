@@ -8,8 +8,6 @@ define ['log'],(log) ->
     canvasCenterLabels: (labels, allLabels, renderer, camera)->
         for l in allLabels
             l.setDivVisible false
-        for l in labels
-            l.setDivVisible true
 
         # get current canvas center
         ccc = camera.position
@@ -32,6 +30,7 @@ define ['log'],(log) ->
             if i >= MAX_LABEL_NUM then break
 
             l = labels[i]
+            l.setDivVisible true
 
             lpos = l.parent.position.clone()
             lpos.applyProjection mvp
