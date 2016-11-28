@@ -3,7 +3,7 @@
 
 但是以上交互比较麻烦。先把当前的 labeling 分支处理一下，保存起来比较好。
 
-TODO: 弄好之后另开分支，处理场景更新时，需要传入 Camera 的引用给 update Objects. 这看上去像是依赖倒置了，可能存在设计上的问题。
+DROP: 弄好之后另开分支，处理场景更新时，需要传入 Camera 的引用给 update Objects. 这看上去像是依赖倒置了，可能存在设计上的问题。
 
 1. Label.coffe 中，使用传入的 Camera，和 renderer 来计算 label 在屏幕上的位置。自己以前也记录了“可能是坏的设计。
 2. CameraControl 里面，根据 Camera 正投影/与否，更新 Camera 的宽高和投影矩阵。
@@ -68,7 +68,7 @@ TODO: 重写 ruler 类，可以把它改成 grid，放入场景。
 
 数据，标签，标尺。
 
-TODO:
+DONE:
 1)先不动结构，先把Label 显示上去。保存分支。
 
 …… labeling 分支上未保存的两个文件是 Labeling （算法模块，可以算是 app 的 controller 的子模块），和 DataGroupLabeling（数据群的辅助算法，可以算是场景中的 meta data 对象，便于分块管理，也是算法模块的子块，向算法提供接口 <LabelAble>）
@@ -133,7 +133,7 @@ https://threejs.org/docs/index.html#Reference/Core/Layers
         .onAfterRender
         An optional callback that is executed immediately after the Object3D is rendered. This function is called with the following parameters: renderer, scene, camera, geometry, material, group. 
 
-    所以，不在范围内的物体的不会被 render，(TODO确认不触发回调)自然就不用计算其标签。这样，上面的 3 就可以简单的实现为：
+    所以，不在范围内的物体的不会被 render，(DONE确认不触发回调)自然就不用计算其标签。这样，上面的 3 就可以简单的实现为：
     * 重绘前，取下/标记 DOM 中的 labelroot， 清除其中所有标签
     * render scene (钩子中重建标签)
     * 把 labelroot 放回 DOM
@@ -168,3 +168,9 @@ but in my case, @div may not be defined
     # should be @?div
 
 
+
+= Two different Labeling Design
+1. "Paste" label on to DataPoint, make `Label` a child object, hook `Label::updateDivPos` to objec3d's call back `onAfterRender`.
+2. Separate label from data points.  Let three.js render scene, after that, do labeling algorithm. ( This will need a clear ADT=Abstract Data Type be designed firstly)
+
+TODO: a patch to 1, hook `need Lable` to `WebPage extends DataPoint`, then do a labeling algorithm on them. ( assume `WebPage` as ADT )
