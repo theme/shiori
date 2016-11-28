@@ -1,5 +1,6 @@
 define ['Cube','Ruler','InputMixer','lib/EventEmitter'],(Cube,Ruler,InputMixer,EventEmitter)->
     V3 = THREE.Vector3
+    MIN_AXIS_RANGE = 20 # minimun range for `lookAtRange`
     class CameraController extends EventEmitter
         constructor: (canvas)->
             super
@@ -145,6 +146,10 @@ define ['Cube','Ruler','InputMixer','lib/EventEmitter'],(Cube,Ruler,InputMixer,E
                 @update @ccam
 
         lookAtRange: (min,max) ->
+            if (max - min) < MIN_AXIS_RANGE
+                middle = min
+                min = middle - (MIN_AXIS_RANGE / 2)
+                max = middle + (MIN_AXIS_RANGE / 2)
             if @ccam instanceof THREE.OrthographicCamera
                 @ccam.zoom = (@ccam.right-@ccam.left)/(max-min)
                 @ccam.updateProjectionMatrix()
