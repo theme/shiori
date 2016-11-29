@@ -1,6 +1,7 @@
 define ['lib/EventEmitter', 'lib/moment'], (EventEmitter, Moment) ->
 
-    MIN = 3600 * 1000 # milliseconds
+    SECOND = 1000 # milliseconds
+    MIN = SECOND * 60
     HOUR = MIN * 60
     DAY = MIN * 24
     WEEK = DAY * 7
@@ -34,7 +35,6 @@ define ['lib/EventEmitter', 'lib/moment'], (EventEmitter, Moment) ->
                 return null
 
         layoutY: (camera, renderer) ->
-            console.log 'layoutY'
             # calculate Y scale
             rect = renderer.domElement.getBoundingClientRect()
             zoom = camera.zoom
@@ -42,6 +42,9 @@ define ['lib/EventEmitter', 'lib/moment'], (EventEmitter, Moment) ->
             for p in @children
                 pm = Moment(p.date)
                 switch
+                    when xrange < 2 * SECOND
+                        yrange = SECOND # in order to fully span points on y
+                        diff = pm.diff pm.clone().startOf('second')
                     when xrange < 2 * MIN
                         yrange = MIN # in order to fully span points on y
                         diff = pm.diff pm.clone().startOf('minute')
@@ -62,19 +65,21 @@ define ['lib/EventEmitter', 'lib/moment'], (EventEmitter, Moment) ->
                         diff = pm.diff pm.clone().startOf('year')
                     when xrange < 2 * 20 * YEAR
                         yrange = 20 * YEAR
-                        diff = pm.diff pm.clone().substrace(20, 'years').startOf('year')
+                        diff = pm.diff pm.clone().subtract(20, 'years').startOf('year')
                     when xrange < 2 * 100 * YEAR
                         yrange = 100 * YEAR
-                        diff = pm.diff pm.clone().substrace(100, 'years').startOf('year')
+                        diff = pm.diff pm.clone().subtract(100, 'years').startOf('year')
                     when xrange < 2 * 500 * YEAR
                         yrange = 500 * YEAR
-                        diff = pm.diff pm.clone().substrace(500, 'years').startOf('year')
+                        diff = pm.diff pm.clone().subtract(500, 'years').startOf('year')
                     else
                         yrange = 5000 * YEAR
-                        diff = pm.diff pm.clone().substrace(5000, 'years').startOf('year')
+                        diff = pm.diff pm.clone().subtract(5000, 'years').startOf('year')
 
-                posY = ( yrange * 0.5 - diff ) / zoom
-                p.position.y = posY
+                posY = yrange * 0.5 - diff
+                p.position.y = posY / zoom
+                # console.log 'yrange=', yrange
+                # console.log 'p.position.y', p.position.y
 
     return DataGroup
 
