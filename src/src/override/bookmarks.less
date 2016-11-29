@@ -1,15 +1,14 @@
 @dbg-color: rgba(255,0,0, .05);
 @dropdown-background-color: #ffe;
 
-@header-height: 2em;
-
 div, ul, li, p, a, form, h1, h2, h3, form {
     background: @dbg-color; // debug
 }
 
-div, form, h2 {
+div {
     margin: 0;
 }
+
 
 html, body, canvas {
     height: 100%;
@@ -17,61 +16,31 @@ html, body, canvas {
     margin: 0;
     padding: 0;
     border: none;
+    overflow: hidden;
 }
 
-#header {
+#labelcontainer, #labelroot {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    height: @header-height;
-    >* { display: inline; }
-    #app-name { font-weight: normal; }
-    #url-form { float: right; }
-}
 
-#labelcontainer {
-    // height: 100%;
-    // width: 100%;
-    overflow: hidden;
-    #labelroot {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 0;
-    }
+    height: 0;
+    width: 0;
 }
 
 #HUD {
     position: absolute;
     right: 0;
-    top: @header-height;
+    top: 0;
 }
 
-#canvas {
-
-}
-
-#main {
-    box-sizing: border-box;
-    padding-top: @header-height;
-    height: 100%;
-    >div {
-        float:left;
-        box-sizing: border-box;
-    }
-    canvas { width: 100%; }
-}
 
 .label {
     color: white;
     position: absolute;
+    .notvisible {
+        display: none;
+    }
 }
 
-
-
-
-.notvisible {
-    display: none;
-}
 

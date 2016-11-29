@@ -36,6 +36,7 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
             @camY = 0
             @History = false
             @Bookmarks = false
+            @BookmarksSearch = ''
 
     initHUD = (render) ->
         hud = new HUD()
@@ -43,17 +44,23 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
         s = 0.000001
         # Data (model)
         fData  = gui.addFolder 'Data'
-        historyToggle = fData.add(hud, 'History').listen()
-        historyToggle.onFinishChange (t) ->
-            if not Model.historyGroup.loaded
-                loadHistory scene
-            Model.historyGroup.setVisible t
+
+        bookmarksSearch = fData.add(hud, 'BookmarksSearch').listen()
+        bookmarksSearch  .onFinishChange (t) ->
+            console.log t
 
         bookmarksToggle = fData.add(hud, 'Bookmarks').listen()
         bookmarksToggle .onFinishChange (t) ->
             if not Model.bookmarksGroup.loaded
                 loadBookmarks scene
             Model.bookmarksGroup.setVisible t
+
+        historyToggle = fData.add(hud, 'History').listen()
+        historyToggle.onFinishChange (t) ->
+            if not Model.historyGroup.loaded
+                loadHistory scene
+            Model.historyGroup.setVisible t
+
         fData.open()
 
         # Camera
