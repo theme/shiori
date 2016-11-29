@@ -157,6 +157,10 @@ require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixe
 
         # updateAnimations()
 
+        # update points position according to Y scale
+        Model.historyGroup.layoutY( cameraCtl.currentCam(), renderer)
+        Model.bookmarksGroup.layoutY( cameraCtl.currentCam(), renderer)
+
         # before render
         Model.renderedLabels = []
         

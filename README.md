@@ -101,10 +101,24 @@ With the help of [moment.js :: duaration][http://momentjs.com/docs/#/durations/]
     >>> 1366.0 / a
     8.663115169964485e-12
 
-says a 1366 x 768 laptop computer's screen width will cause three.js to render with pricison of e-12 level when we view a xrange of 50 centuries.
+means a 1366 x 768 laptop computer's screen width will cause three.js to render with pricison of e-12 level when we view a xrange of 50 centuries.
 
 three.js [WebGLRenderer][https://threejs.org/docs/?q=render#Reference/Renderers/WebGLRenderer] has a precision property
 
     precision — Shader precision. Can be "highp", "mediump" or "lowp". Defaults to "highp" if supported by the device.
 
 if I let DataPoint.x = atime ( in milliseconds ), and zoom ... seems no problem.  (just some minor fix to control widget range.)
+
+### change DataPoints position before every render.
+
+We can adjust DataPoint's position before each render, before rendering.
+
+Calculating position needs:
+
+* WebPage.atime ( will be used as `DataPoint.date` )
+* camera ( zoom, position, left, right ), calculates current visible xrange, further determines current `y-scale` of { minute, hour, day, week, month, year ...}
+* renderer ( browser client area: width, height ), with camera zoom, calculates `DataPoint.position.y`
+
+Naming the algorithm method `DataGroup.layoutY( points, camera, renderer )` 
+
+Utilize `moment().startOf('year');` 

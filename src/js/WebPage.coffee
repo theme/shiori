@@ -1,7 +1,7 @@
-define ['DataPoint','Label', 'Model'], (DataPoint,Label, Model) ->
+define ['DataPoint', 'Label', 'Model'], (DataPoint, Label, Model) ->
     class WebPage extends DataPoint
         constructor: (url, title, atime = Date.now())->
-            super
+            super atime # use atime as DataPoint.date
             if title?
                 @title = title
             else
@@ -14,5 +14,6 @@ define ['DataPoint','Label', 'Model'], (DataPoint,Label, Model) ->
             @onAfterRender = ()->
                 Model.renderedLabels.push l
             @add l
+
     return WebPage
 
