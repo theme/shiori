@@ -63,7 +63,8 @@ define(function(){
             else {
                 dispatch(el,'pan', {
                     deltaX: cursor.deltaClientX * panRatio,
-                    deltaY: cursor.deltaClientY * panRatio,
+                    // lock Y pan
+                    deltaY: 0
                 });
             }
 
