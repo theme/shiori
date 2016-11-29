@@ -64,8 +64,10 @@ require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixe
         fData.open()
 
         # Camera
+        CENTURY_MS = Moment.duration(5000, 'years').asMilliseconds()
+        SCREEN_PIXEL = 4000
         fCamera = gui.addFolder 'Camera'
-        z = fCamera.add(hud, 'logZoom',-25,25).listen()
+        z = fCamera.add(hud, 'logZoom', -Math.log(CENTURY_MS), Math.log(SCREEN_PIXEL)).listen()
         z.onFinishChange (v) -> cameraCtl.zoom Math.exp(v)
         camX = fCamera.add(hud, 'camX').step(s).listen()
         camX.onFinishChange (v) ->
@@ -174,8 +176,8 @@ require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixe
     # watch chrome history
     addHistoryPoint = (url, title, lastVisitTime) ->
         p = new WebPage(url, title, lastVisitTime)
-        p.translateX p.atime/msInHour
-        p.translateY (12 - ((p.atime % msInDay)/msInHour))
+        p.translateX p.atime #/msInHour
+        p.translateY (12 - ((p.atime % msInDay)))
         # log p.position.y, p.title, p.url
         Model.historyGroup.add p
         return p
