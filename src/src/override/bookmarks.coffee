@@ -1,4 +1,4 @@
-require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup','CameraController','Model','Labeling'], (log, Axis, Compass, Ruler, Cube, WebPage, InputMixer, DataGroup, CameraController, Model, Labeling) ->
+require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup','CameraController','Model','Labeling'], (log, Moment, Axis, Compass, Ruler, Cube, WebPage, InputMixer, DataGroup, CameraController, Model, Labeling) ->
     canvas = null
     scene = null
 
