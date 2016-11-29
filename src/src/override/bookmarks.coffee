@@ -34,11 +34,29 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
             @logZoom = 0.8
             @camX = 0
             @camY = 0
+            @History = false
+            @Bookmarks = false
 
     initHUD = (render) ->
         hud = new HUD()
         gui = new dat.GUI()
         s = 0.000001
+        # Data (model)
+        fData  = gui.addFolder 'Data'
+        historyToggle = fData.add(hud, 'History').listen()
+        historyToggle.onFinishChange (t) ->
+            if not Model.historyGroup.loaded
+                loadHistory scene
+            Model.historyGroup.setVisible t
+
+        bookmarksToggle = fData.add(hud, 'Bookmarks').listen()
+        bookmarksToggle .onFinishChange (t) ->
+            if not Model.bookmarksGroup.loaded
+                loadBookmarks scene
+            Model.bookmarksGroup.setVisible t
+        fData.open()
+
+        # Camera
         fCamera = gui.addFolder 'Camera'
         z = fCamera.add(hud, 'logZoom',-25,25).listen()
         z.onFinishChange (v) -> cameraCtl.zoom Math.exp(v)
@@ -49,6 +67,7 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
         camY.onFinishChange (v) ->
             cameraCtl.moveTo cameraCtl.pos().setY(v)
         fCamera.open()
+
         return gui
 
     # watch window resize, adjust canvas
@@ -204,17 +223,6 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
             return
         return
 
-    watchToggles = () ->
-        $('check-history').addEventListener 'change', (e)->
-            if not Model.historyGroup.loaded
-                loadHistory scene
-            Model.historyGroup.setVisible e.target?.checked
-            return
-        $('check-bookmarks').addEventListener 'change', (e)->
-            if not Model.bookmarksGroup.loaded
-                loadBookmarks scene
-            Model.bookmarksGroup.setVisible e.target?.checked
-            return
 
     # load scene & start render
     loader = new THREE.ObjectLoader
@@ -234,9 +242,6 @@ require ['log','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup
         scene.add(compass)
 
         watchHistory scene
-
-        # toggle on/off bookmarks
-        watchToggles()
 
         render()
     , (xhr) -> console.log xhr.loaded/xhr.total*100+'% loaded'

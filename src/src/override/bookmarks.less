@@ -1,17 +1,17 @@
 @dbg-color: rgba(255,0,0, .05);
 @dropdown-background-color: #ffe;
-/* debug */
-div, ul, li, p, a, form, h1, h2, h3, form {
-    background: @dbg-color;
-}
 
 @header-height: 2em;
+
+div, ul, li, p, a, form, h1, h2, h3, form {
+    background: @dbg-color; // debug
+}
 
 div, form, h2 {
     margin: 0;
 }
 
-html, body, canvas, iframe {
+html, body, canvas {
     height: 100%;
     width: 100%;
     margin: 0;
@@ -30,6 +30,28 @@ html, body, canvas, iframe {
     #url-form { float: right; }
 }
 
+#labelcontainer {
+    // height: 100%;
+    // width: 100%;
+    overflow: hidden;
+    #labelroot {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+    }
+}
+
+#HUD {
+    position: absolute;
+    right: 0;
+    top: @header-height;
+}
+
+#canvas {
+
+}
+
 #main {
     box-sizing: border-box;
     padding-top: @header-height;
@@ -46,18 +68,8 @@ html, body, canvas, iframe {
     position: absolute;
 }
 
-#labelroot {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-}
 
-#HUD {
-    position: absolute;
-    right: 0;
-    top: @header-height;
-}
+
 
 .notvisible {
     display: none;
