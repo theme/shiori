@@ -9,6 +9,7 @@ define ['DataPoint', 'Label', 'Model'], (DataPoint, Label, Model) ->
                 @title (if matches? then matches[1] else title)
             @url = url
             @atime = atime
+            console.log 'WebPage.atime', atime
 
             l = new Label title
             @onAfterRender = ()->

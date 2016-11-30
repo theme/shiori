@@ -146,6 +146,7 @@ define ['Cube','Ruler','InputMixer','lib/EventEmitter'],(Cube,Ruler,InputMixer,E
                 @update @ccam
 
         lookAtRange: (min,max) ->
+            console.log "CamCtl.lookAtRange", min, max
             if (max - min) < MIN_AXIS_RANGE
                 middle = min
                 min = middle - (MIN_AXIS_RANGE / 2)

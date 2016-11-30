@@ -11,6 +11,8 @@ TODO
 - [ ] fix grid.
 - [ ] prevent label overflow caused scroll bar.
 - [x] move history and bookmarks toggle to Dat.gui.
+- [ ] fix history and bookmarks toggle on / off .
+- [ ] add label on / off .
 
 Design
 ======

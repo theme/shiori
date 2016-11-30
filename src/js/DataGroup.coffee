@@ -39,47 +39,48 @@ define ['lib/EventEmitter', 'lib/moment'], (EventEmitter, Moment) ->
             rect = renderer.domElement.getBoundingClientRect()
             zoom = camera.zoom
             xrange = rect.width / zoom
+            yrange = rect.height / zoom
             for p in @children
                 pm = Moment(p.date)
                 switch
                     when xrange < 2 * SECOND
-                        yrange = SECOND # in order to fully span points on y
-                        diff = pm.diff pm.clone().startOf('second')
+                        yMSspan = SECOND # in order to fully span points on y
+                        msDiff = pm.diff pm.clone().startOf('second')
                     when xrange < 2 * MIN
-                        yrange = MIN # in order to fully span points on y
-                        diff = pm.diff pm.clone().startOf('minute')
+                        yMSspan = MIN # in order to fully span points on y
+                        msDiff = pm.diff pm.clone().startOf('minute')
                     when xrange < 2 * HOUR
-                        yrange = HOUR
-                        diff = pm.diff pm.clone().startOf('hour')
+                        yMSspan = HOUR
+                        msDiff = pm.diff pm.clone().startOf('hour')
                     when xrange < 2 * DAY
-                        yrange = DAY
-                        diff = pm.diff pm.clone().startOf('day')
+                        yMSspan = DAY
+                        msDiff = pm.diff pm.clone().startOf('day')
                     when xrange < 2 * WEEK
-                        yrange = WEEK
-                        diff = pm.diff pm.clone().startOf('week')
+                        yMSspan = WEEK
+                        msDiff = pm.diff pm.clone().startOf('week')
                     when xrange < 2 * MONTH
-                        yrange = MONTH
-                        diff = pm.diff pm.clone().startOf('month')
+                        yMSspan = MONTH
+                        msDiff = pm.diff pm.clone().startOf('month')
                     when xrange < 2 * YEAR
-                        yrange = YEAR
-                        diff = pm.diff pm.clone().startOf('year')
+                        yMSspan = YEAR
+                        msDiff = pm.diff pm.clone().startOf('year')
                     when xrange < 2 * 20 * YEAR
-                        yrange = 20 * YEAR
-                        diff = pm.diff pm.clone().subtract(20, 'years').startOf('year')
+                        yMSspan = 20 * YEAR
+                        msDiff = pm.diff pm.clone().subtract(20, 'years').startOf('year')
                     when xrange < 2 * 100 * YEAR
-                        yrange = 100 * YEAR
-                        diff = pm.diff pm.clone().subtract(100, 'years').startOf('year')
+                        yMSspan = 100 * YEAR
+                        msDiff = pm.diff pm.clone().subtract(100, 'years').startOf('year')
                     when xrange < 2 * 500 * YEAR
-                        yrange = 500 * YEAR
-                        diff = pm.diff pm.clone().subtract(500, 'years').startOf('year')
+                        yMSspan = 500 * YEAR
+                        msDiff = pm.diff pm.clone().subtract(500, 'years').startOf('year')
                     else
-                        yrange = 5000 * YEAR
-                        diff = pm.diff pm.clone().subtract(5000, 'years').startOf('year')
+                        yMSspan = 5000 * YEAR
+                        msDiff = pm.diff pm.clone().subtract(5000, 'years').startOf('year')
 
-                posY = yrange * 0.5 - diff
-                p.position.y = posY / zoom
+                posY = yrange * msDiff * 2 / yMSspan
+                p.position.y = posY
                 # console.log 'yrange=', yrange
-                # console.log 'p.position.y', p.position.y
+                console.log 'p.position.y', p.position.y
 
     return DataGroup
 
