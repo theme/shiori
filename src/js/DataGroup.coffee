@@ -13,16 +13,16 @@ define ['lib/EventEmitter', 'lib/moment'], (EventEmitter, Moment) ->
             super
             @event = new EventEmitter
 
+        addPoint: (p) ->
+            @add p
+            @event.emit 'addpoint'
+
         setVisible: (f = true)->
             if @visible == f or undefined == f then return
             @visible = f
             for c in @children
                 do (c) -> c.visible = f
             @event.emit 'visible',f
-
-        toggleVisible: ()->
-            if @visible then @setVisible false
-            else @setVisible true
 
         rangeOf: (corr) ->
             arr = @children
@@ -36,51 +36,51 @@ define ['lib/EventEmitter', 'lib/moment'], (EventEmitter, Moment) ->
 
         layoutY: (camera, renderer) ->
             # calculate Y scale
-            rect = renderer.domElement.getBoundingClientRect()
+            canvasSize = renderer.getSize()
             zoom = camera.zoom
-            xrange = rect.width / zoom
-            yrange = rect.height / zoom
+            xpix= canvasSize.width
+            ypix= canvasSize.height
+            xrange = xpix / 1 / zoom # in ms
             for p in @children
                 pm = Moment(p.date)
-                switch
+                switch # different zoom level, different y unit
                     when xrange < 2 * SECOND
-                        yMSspan = SECOND # in order to fully span points on y
+                        yrange = SECOND # in order to fully span points on y
                         msDiff = pm.diff pm.clone().startOf('second')
                     when xrange < 2 * MIN
-                        yMSspan = MIN # in order to fully span points on y
+                        yrange = MIN # in order to fully span points on y
                         msDiff = pm.diff pm.clone().startOf('minute')
                     when xrange < 2 * HOUR
-                        yMSspan = HOUR
+                        yrange = HOUR
                         msDiff = pm.diff pm.clone().startOf('hour')
                     when xrange < 2 * DAY
-                        yMSspan = DAY
+                        yrange = DAY
                         msDiff = pm.diff pm.clone().startOf('day')
                     when xrange < 2 * WEEK
-                        yMSspan = WEEK
+                        yrange = WEEK
                         msDiff = pm.diff pm.clone().startOf('week')
                     when xrange < 2 * MONTH
-                        yMSspan = MONTH
+                        yrange = MONTH
                         msDiff = pm.diff pm.clone().startOf('month')
                     when xrange < 2 * YEAR
-                        yMSspan = YEAR
+                        yrange = YEAR
                         msDiff = pm.diff pm.clone().startOf('year')
                     when xrange < 2 * 20 * YEAR
-                        yMSspan = 20 * YEAR
+                        yrange = 20 * YEAR
                         msDiff = pm.diff pm.clone().subtract(20, 'years').startOf('year')
                     when xrange < 2 * 100 * YEAR
-                        yMSspan = 100 * YEAR
+                        yrange = 100 * YEAR
                         msDiff = pm.diff pm.clone().subtract(100, 'years').startOf('year')
                     when xrange < 2 * 500 * YEAR
-                        yMSspan = 500 * YEAR
+                        yrange = 500 * YEAR
                         msDiff = pm.diff pm.clone().subtract(500, 'years').startOf('year')
                     else
-                        yMSspan = 5000 * YEAR
+                        yrange = 5000 * YEAR
                         msDiff = pm.diff pm.clone().subtract(5000, 'years').startOf('year')
 
-                posY = yrange * msDiff * 2 / yMSspan
+                msY = msDiff - 0.5 * yrange
+                posY = msY * ypix / yrange
                 p.position.y = posY
-                # console.log 'yrange=', yrange
-                console.log 'p.position.y', p.position.y
 
     return DataGroup
 

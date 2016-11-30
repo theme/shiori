@@ -1,6 +1,8 @@
-define ['Cube','Ruler','InputMixer','lib/EventEmitter'],(Cube,Ruler,InputMixer,EventEmitter)->
+define ['Ruler','InputMixer','lib/EventEmitter'],(Ruler,InputMixer,EventEmitter)->
+
     V3 = THREE.Vector3
     MIN_AXIS_RANGE = 20 # minimun range for `lookAtRange`
+
     class CameraController extends EventEmitter
         constructor: (canvas)->
             super

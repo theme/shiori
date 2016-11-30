@@ -1,31 +1,20 @@
-require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixer','DataGroup','CameraController','Model','Labeling'], (log, Moment, Axis, Compass, Ruler, Cube, WebPage, InputMixer, DataGroup, CameraController, Model, Labeling) ->
-    canvas = null
+require ['log','lib/moment','lib/EventEmitter','WebPage','DataGroup','CameraController','Model','LabelLayer'], (log, Moment, EventEmitter, WebPage, DataGroup, CameraController, Model, LabelLayer) ->
+
+    # helper functions
+    V3 = THREE.Vector3
+    $ = (id) -> return document.getElementById id
+
+    # App components
     scene = null
-
+    compass = null # object in the scene
+    canvas = null
     cameraCtl = null
-
     renderer = null
 
-    # animation vars
-    clock = new THREE.Clock
-    stopTime = 5
-    mixer = null    # animation player
-    mixerActions = []   # animation actions list
-
-    # helper
-    V3 = THREE.Vector3
-    ccw = -> canvas.clientWidth
-    cch = -> canvas.clientHeight
-    $ = (id) -> return document.getElementById id
+    labelLayer = null
 
     # labels layer ( in DOM )
     labelroot = $('labelroot')
-
-    # contents
-    msInHour = 1000 * 3600
-    msInDay = msInHour * 24
-
-    compass = null
 
     # HUD on canvas
     hud = null
@@ -37,6 +26,7 @@ require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixe
             @History = false
             @Bookmarks = false
             @BookmarksSearch = ''
+            @LabelVisible = false
 
     initHUD = (render) ->
         hud = new HUD()
@@ -46,11 +36,11 @@ require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixe
         fData  = gui.addFolder 'Data'
 
         bookmarksSearch = fData.add(hud, 'BookmarksSearch').listen()
-        bookmarksSearch  .onFinishChange (t) ->
+        bookmarksSearch.onFinishChange (t) ->
             console.log t
 
         bookmarksToggle = fData.add(hud, 'Bookmarks').listen()
-        bookmarksToggle .onFinishChange (t) ->
+        bookmarksToggle.onFinishChange (t) ->
             if not Model.bookmarksGroup.loaded
                 loadBookmarks scene
             Model.bookmarksGroup.setVisible t
@@ -77,25 +67,14 @@ require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixe
             cameraCtl.moveTo cameraCtl.pos().setY(v)
         fCamera.open()
 
+        # Labels
+        fLabel = gui.addFolder 'Label'
+        labelingToggle = fLabel.add(hud, 'LabelVisible').listen()
+        labelingToggle.onFinishChange (t) ->
+            labelLayer.labelingToggle = t
+        fLabel.open()
+
         return gui
-
-    # watch window resize, adjust canvas
-    watchResize = (el, callback) ->
-        h = el.clientHeight # remember value of now
-        w = el.clientWidth
-        return setInterval( -> # check value after 500ms
-            if (el.clientHeight != h || el.clientWidth != w)
-                h = el.clientHeight
-                w = el.clientWidth
-                callback()
-                return
-        , 500)
-
-    handleCanvasResize = ->
-        canvas.width = ccw() # needed for renderer.setViewport
-        canvas.height = cch()
-        renderer.setViewport 0,0,ccw(),cch()
-        render()
 
     init = ->
         # canvas
@@ -110,10 +89,6 @@ require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixe
         cameraCtl = new CameraController canvas
         cameraCtl.on 'touched', render
 
-        # Viewport
-        handleCanvasResize()
-        watchResize canvas, handleCanvasResize
-
         # HUD widget
         $('HUD').appendChild initHUD(render).domElement
         cameraCtl.on 'zoom', (z)->
@@ -126,71 +101,62 @@ require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixe
         Model.historyGroup = new DataGroup
         Model.historyGroup.loaded = false
         Model.historyGroup.event.on 'loaded',render
-        Model.historyGroup.event.on 'visible',render
+        # Model.historyGroup.event.on 'visible',render
         Model.historyGroup.event.on 'added', ()->
             render() if Model.historyGroup.visible
         Model.bookmarksGroup = new DataGroup
         Model.bookmarksGroup.loaded = false
         Model.bookmarksGroup.event.on 'loaded',render
-        Model.bookmarksGroup.event.on 'visible',render
+        # Model.bookmarksGroup.event.on 'visible',render
+
+        # Labeling
+        labelLayer = new LabelLayer
+        labelLayer.on 'visible', (t) -> render
 
         return
 
-    updateAnimations = ->
-        delta = clock.getDelta()
-
-        mixer.update delta
-        
-        # stop animations after stopTime
-        if clock.elapsedTime > stopTime
-            for c in mixerActions
-                do (c) -> c.stop()
-
-        return
-        
     render = (f = true)->
         if not f then return
-        cameraCtl.update()
+
+        # before render
+        
+        cameraCtl.update() # set camera
+        cam = cameraCtl.currentCam()
+
+        cw = canvas.clientWidth # set renderer
+        ch = canvas.clientHeight
+        renderer.setSize cw, ch, true
 
         $('labelcontainer').removeChild labelroot  # to reduce re-flow
         # scene.traverse (obj) -> obj.update?(cameraCtl.currentCam(), renderer)
+        Model.historyGroup.layoutY( cam, renderer) # datapoints, set position
+        Model.bookmarksGroup.layoutY( cam, renderer)
 
-        # updateAnimations()
-
-        # update points position according to Y scale
-        Model.historyGroup.layoutY( cameraCtl.currentCam(), renderer)
-        Model.bookmarksGroup.layoutY( cameraCtl.currentCam(), renderer)
-
-        # before render
         Model.renderedLabels = []
         
         # do render
-        renderer.render(scene, cameraCtl.currentCam())
+        renderer.render(scene, cam)
 
         # after render
-        # do labeling
-        Labeling.canvasCenterLabels(
-            Model.renderedLabels, Model.allLabels, renderer, cameraCtl.currentCam())
+        labelLayer.canvasCenterLabels(
+            Model.renderedLabels, Model.allLabels, renderer, cam
+        )
 
-        # clear flags
-        $('labelcontainer').appendChild labelroot
+        $('labelcontainer').appendChild labelroot # to reduce re-flow
 
         return
 
     # watch chrome history
     addHistoryPoint = (url, title, lastVisitTime) ->
         p = new WebPage(url, title, lastVisitTime)
-        p.translateX p.atime #/msInHour
-        p.translateY (12 - ((p.atime % msInDay)))
-        # log p.position.y, p.title, p.url
-        Model.historyGroup.add p
+        p.translateX p.atime
+        Model.historyGroup.addPoint p
         return p
 
     watchHistory = (scene) ->
         chrome.history.onVisited.addListener (hi)->
             p = addHistoryPoint(hi.url,hi.title,hi.lastVisitTime)
             log 'history onVisited',p.id,p.url
-            Model.historyGroup.event.emit 'added'
 
     loadHistory = (scene) ->
         chrome.history.search {text:'',maxResults:2000},(a)->
@@ -213,9 +179,7 @@ require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixe
             addBmNode = (n)->
                 bmCount += 1
                 p = new WebPage n.url,n.title,n.dateAdded
-                p.translateX p.atime/msInHour
-                p.translateY (12 - ((p.atime % msInDay)/msInHour))
-                # log p.position.y
+                p.translateX p.atime
                 Model.bookmarksGroup.add p
                 return
             traverseTree = (bmlist, callback)-> # define
@@ -241,18 +205,8 @@ require ['log','lib/moment','Axis','Compass','Ruler','Cube','WebPage','InputMixe
     loader = new THREE.ObjectLoader
     loader.load("/models/untitled.json", (loadedScene) ->
         scene = loadedScene
-        scene.fog = new THREE.Fog 0xffffff, 2000, 10000
-
-        mixer = new THREE.AnimationMixer scene
-        for a in loadedScene.animations
-            do (a) ->
-                mixerActions.push mixer.clipAction(a).play()
 
         init()
-
-        scene.add cameraCtl.currentCam()
-        compass = new Compass
-        scene.add(compass)
 
         watchHistory scene
 

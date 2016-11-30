@@ -9,10 +9,12 @@ define ['log', 'Model'],(log, Model) ->
             Model.allLabels.push @
 
             @div = document.createElement 'div'
-            labelRootEl.appendChild @div
+
             @div.innerHTML = @text
             @div.classList.add 'label'
             @div.classList.add 'notvisible'
+
+            labelRootEl.appendChild @div
             return
 
         setDivVisible: (y)->

@@ -14,10 +14,7 @@ TODO
 - [ ] fix history and bookmarks toggle on / off .
 - [ ] add label on / off .
 
-Design
-======
-
-## Use all visible Y span.
+## Design - Use all visible Y span.
 
 At first I though that
 
@@ -36,10 +33,7 @@ As long as you consider span event points onto y direction, the most zoom level 
 
 Design Choice :> use Y range as hour / day / week / month / year
 
-Implement
-=========
-
-## use Y range as hour / day / week / month / year
+## Implement - use Y range as hour / day / week / month / year
 
 Because Y axis unit change, object in the scene will relocate on unit change.
 
@@ -124,3 +118,10 @@ Calculating position needs:
 Naming the algorithm method `DataGroup.layoutY( points, camera, renderer )` 
 
 Utilize `moment().startOf('year');` 
+
+## Labeling 
+
+I used `Labeling` to mean the Labeling algorithm.  Because there is no `LabelLayer` object, this confused myself: where should I put all labels visibility status ? into `Model` or `Labeling`.  Thinking `Labeling` as an algorithm "object" is not right, algorithm should be thought as a process, a method of some object (as in OOP).
+
+So add `LabelLayer` class.  ( Inherit `EventEmitter`. )
+
