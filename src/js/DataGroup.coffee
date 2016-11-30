@@ -3,7 +3,7 @@ define ['lib/EventEmitter', 'lib/moment'], (EventEmitter, Moment) ->
     SECOND = 1000 # milliseconds
     MIN = SECOND * 60
     HOUR = MIN * 60
-    DAY = MIN * 24
+    DAY = HOUR * 24
     WEEK = DAY * 7
     MONTH = DAY * 30
     YEAR = MONTH * 12
@@ -38,9 +38,7 @@ define ['lib/EventEmitter', 'lib/moment'], (EventEmitter, Moment) ->
             # calculate Y scale
             canvasSize = renderer.getSize()
             zoom = camera.zoom
-            xpix= canvasSize.width
-            ypix= canvasSize.height
-            xrange = xpix / 1 / zoom # in ms
+            xrange = canvasSize.width * 1 / zoom # ms
             for p in @children
                 pm = Moment(p.date)
                 switch # different zoom level, different y unit
@@ -79,8 +77,9 @@ define ['lib/EventEmitter', 'lib/moment'], (EventEmitter, Moment) ->
                         msDiff = pm.diff pm.clone().subtract(5000, 'years').startOf('year')
 
                 msY = msDiff - 0.5 * yrange
-                posY = msY * ypix / yrange
+                posY = msY * canvasSize.height / zoom / yrange
                 p.position.y = posY
+                # p.position.y = Math.random() * yrange
 
     return DataGroup
 
