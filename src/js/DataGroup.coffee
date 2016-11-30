@@ -60,21 +60,9 @@ define ['lib/EventEmitter', 'lib/moment'], (EventEmitter, Moment) ->
                     when xrange < 2 * MONTH
                         yrange = MONTH
                         msDiff = pm.diff pm.clone().startOf('month')
-                    when xrange < 2 * YEAR
+                    else
                         yrange = YEAR
                         msDiff = pm.diff pm.clone().startOf('year')
-                    when xrange < 2 * 20 * YEAR
-                        yrange = 20 * YEAR
-                        msDiff = pm.diff pm.clone().subtract(20, 'years').startOf('year')
-                    when xrange < 2 * 100 * YEAR
-                        yrange = 100 * YEAR
-                        msDiff = pm.diff pm.clone().subtract(100, 'years').startOf('year')
-                    when xrange < 2 * 500 * YEAR
-                        yrange = 500 * YEAR
-                        msDiff = pm.diff pm.clone().subtract(500, 'years').startOf('year')
-                    else
-                        yrange = 5000 * YEAR
-                        msDiff = pm.diff pm.clone().subtract(5000, 'years').startOf('year')
 
                 msY = msDiff - 0.5 * yrange
                 posY = msY * canvasSize.height / zoom / yrange

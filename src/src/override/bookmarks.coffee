@@ -1,4 +1,4 @@
-require ['log','lib/moment','lib/EventEmitter','WebPage','DataGroup','CameraController','Model','LabelLayer'], (log, Moment, EventEmitter, WebPage, DataGroup, CameraController, Model, LabelLayer) ->
+require ['log','lib/moment','lib/EventEmitter','WebPage','DataGroup','GridGroup','CameraController','Model','LabelLayer'], (log, Moment, EventEmitter, WebPage, DataGroup, GridGroup, CameraController, Model, LabelLayer) ->
 
     # helper functions
     V3 = THREE.Vector3
@@ -6,7 +6,7 @@ require ['log','lib/moment','lib/EventEmitter','WebPage','DataGroup','CameraCont
 
     # App components
     scene = null
-    compass = null # object in the scene
+    gridGroup = null
     canvas = null
     cameraCtl = null
     renderer = null
@@ -133,6 +133,9 @@ require ['log','lib/moment','lib/EventEmitter','WebPage','DataGroup','CameraCont
         Model.bookmarksGroup.layoutY( cam, renderer)
 
         Model.renderedLabels = []
+
+        # move gride
+        gridGroup.update( cam )
         
         # do render
         renderer.render(scene, cam)
@@ -205,6 +208,9 @@ require ['log','lib/moment','lib/EventEmitter','WebPage','DataGroup','CameraCont
     loader = new THREE.ObjectLoader
     loader.load("/models/untitled.json", (loadedScene) ->
         scene = loadedScene
+
+        gridGroup = new GridGroup
+        scene.add(gridGroup)
 
         init()
 
