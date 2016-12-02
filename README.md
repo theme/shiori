@@ -8,7 +8,7 @@ TODO
 
 - [x] lock vertical panning.
 - [ ] Use all visible Y span. (as hour / day / week / year)
-- [ ] fix grid.
+- [x] fix grid.
 - [ ] prevent label overflow caused scroll bar.
 - [x] move history and bookmarks toggle to Dat.gui.
 - [ ] fix history and bookmarks toggle on / off .
@@ -124,4 +124,12 @@ Utilize `moment().startOf('year');`
 I used `Labeling` to mean the Labeling algorithm.  Because there is no `LabelLayer` object, this confused myself: where should I put all labels visibility status ? into `Model` or `Labeling`.  Thinking `Labeling` as an algorithm "object" is not right, algorithm should be thought as a process, a method of some object (as in OOP).
 
 So add `LabelLayer` class.  ( Inherit `EventEmitter`. )
+
+
+## Grid
+
+Grid is useful.
+
+DONE bug: `GridGroup` is used to move Grid to unit time moment, but it seems points to every _half_ unit ?  ( This is ... very frustrating... OTL )
+FIX bug: ^ This is caused by the `GridHelper( size, division )` implementation, where `size` is double range.
 
