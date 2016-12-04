@@ -12,7 +12,7 @@ TODO
 - [ ] prevent label overflow caused scroll bar.
 - [x] move history and bookmarks toggle to Dat.gui.
 - [ ] fix history and bookmarks toggle on / off .
-- [ ] add label on / off .
+- [x] add label on / off .
 
 ## Design - Use all visible Y span.
 

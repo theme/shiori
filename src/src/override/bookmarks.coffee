@@ -71,7 +71,8 @@ require ['log','lib/moment','lib/EventEmitter','WebPage','DataGroup','GridGroup'
         fLabel = gui.addFolder 'Label'
         labelingToggle = fLabel.add(hud, 'LabelVisible').listen()
         labelingToggle.onFinishChange (t) ->
-            labelLayer.labelingToggle = t
+            if t then labelLayer.turnOn()
+            else labelLayer.turnOff()
         fLabel.open()
 
         return gui
